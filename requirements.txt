@@ -2,3 +2,6 @@ flask
 gunicorn
 textblob
 requests
+flask
+textblob
+requests
