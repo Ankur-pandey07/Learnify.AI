@@ -53,7 +53,8 @@ Built using **Flask**, it integrates **YouTube API** for real video suggestions 
 
 ### 💡 Recommendation Page  
 <img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/8e38928a-cbba-40d4-bbbc-0116fe106937" />
-### Explore by Category
+###
+Explore by Category
 <img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/47b3e31f-2770-4013-8682-e6e35a3ddca2" />
 
 ###
