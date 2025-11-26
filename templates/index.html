@@ -1,183 +1,625 @@
 <!DOCTYPE html>
 <html lang="en">
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="google-site-verification" content="HFgXoGCmOvifRnMWlPTX9dnlxrHus8n1-EpwHX6eQC4" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Learnify.AI | Tech Learning Recommender</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Learnify.AI – Smart Tech Recommendations</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg1:#0b132b;
+    --bg2:#1c2541;
+    --glass: rgba(255,255,255,0.06);
+    --glass-soft: rgba(255,255,255,0.03);
+    --accent: #00b4d8;
+    --accent-2: #90e0ef;
+    --muted: rgba(255,255,255,0.85);
+    --glass-2: rgba(255,255,255,0.04);
+    .cat-icon {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 0 8px rgba(0, 191, 255, 0.3));
+    transition: .3s;
+}
+
+.cat-card:hover .cat-icon {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 12px rgba(0, 191, 255, 0.6));
+}
+
+  }
+  .trend-img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+}
+
+.trend-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    padding: 22px;
+    border-radius: 14px;
+    text-align: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+    transition: .25s ease;
+}
+
+.trend-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 18px 50px rgba(0,191,255,0.4);
+}
+
+  *{box-sizing:border-box}
+  html,body{height:100%; margin:0; font-family:"Poppins",sans-serif; background: linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+
+  /* NAVBAR */
+  .navbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 6%;
+    position:sticky; top:0; z-index:50;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.35);
+  }
+  .brand { display:flex; gap:10px; align-items:center; font-weight:700; font-size:1.25rem; color:var(--accent-2); }
+  .nav-links { display:flex; gap:18px; list-style:none; margin:0; padding:0; align-items:center; }
+  .nav-links a { color:#eaf7fb; text-decoration:none; padding:8px 12px; border-radius:10px; font-weight:600; transition:all .18s; }
+  .nav-links a:hover{ color:var(--accent); transform:translateY(-2px); background: rgba(255,255,255,0.02); }
+
+  /* container */
+  .container{ max-width:1200px; margin:28px auto; padding:0 6%; }
+
+  /* HERO */
+  .hero{
+    display:grid; grid-template-columns: 1fr 420px; gap:36px; align-items:center;
+    margin-top:12px;
+  }
+  .welcome {
+    background:var(--glass); padding:28px; border-radius:16px; box-shadow:0 12px 34px rgba(0,0,0,0.45);
+    backdrop-filter: blur(10px);
+    overflow:hidden;
+    position:relative;
+  }
+  .welcome:before{
+    content:""; position:absolute; right:-120px; top:-60px; width:360px; height:360px; background: radial-gradient(circle at 30% 30%, rgba(0,180,216,0.06), transparent 40%);
+    transform: rotate(10deg); pointer-events:none;
+  }
+  .welcome h1{ margin:0; font-size:2.25rem; color:var(--accent-2); line-height:1.02; }
+  .welcome p.thought{ margin:12px 0 18px 0; color:#dff7fb; opacity:0.95; font-size:1.05rem; }
+
+  /* Search */
+  .search-row { display:flex; gap:12px; align-items:center; margin-top:12px; }
+  .search-input{
+    flex:1; padding:14px 16px; border-radius:12px; border:none; outline:none; font-size:1rem;
+    background: rgba(255,255,255,0.02); color:#fff;
+    transition: box-shadow .18s, transform .12s;
+  }
+  .search-input:focus { box-shadow:0 8px 30px rgba(0,180,216,0.12); transform:translateY(-2px); }
+  .search-btn{
+    background: linear-gradient(90deg,var(--accent),#0077b6); color:#fff; border:none; padding:12px 18px;
+    border-radius:10px; font-weight:700; cursor:pointer; transition: transform .12s;
+  }
+  .search-btn:active { transform:scale(.98); }
+
+  /* quick chips */
+  .chips { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+  .chip{ background:transparent; border:1px solid rgba(255,255,255,0.06); padding:8px 12px; border-radius:999px; color:#eaf7fb; font-weight:600; cursor:pointer; transition:all .15s; }
+  .chip:hover{ background: rgba(255,255,255,0.02); transform:translateY(-4px); color:var(--accent); }
+
+  /* AI panel */
+  .ai-panel { text-align:center; }
+  .ai-card{ background:var(--glass); padding:18px; border-radius:16px; box-shadow:0 12px 34px rgba(0,0,0,0.45); backdrop-filter:blur(10px); display:inline-block; transform-style:preserve-3d; }
+  .ai-img { width:320px; max-width:100%; border-radius:12px; display:block; margin:0 auto; animation: float 4s ease-in-out infinite; }
+  @keyframes float { 0%{transform:translateY(0)}50%{transform:translateY(-14px)}100%{transform:translateY(0)} }
+  .ai-note { margin-top:12px; color:#dff7fb; opacity:0.95; font-weight:600; }
+
+  /* Sections */
+  .section { margin-top:44px; }
+  .section h2{ margin:0 0 18px 0; color:var(--accent-2); font-size:1.8rem; }
+
+  /* Categories grid */
+  .cat-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:18px; }
+  .cat-card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    padding:18px; border-radius:12px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.36);
+    transform-origin:center; transition: transform .25s cubic-bezier(.2,.9,.2,1), box-shadow .25s;
+  }
+  .cat-card:hover{ transform: translateY(-10px) rotateX(2deg); box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+  .cat-card h3{ margin:8px 0; color:#eaf7fb; }
+  .cat-card p{ margin:0; color:#dff7fb; opacity:0.9; }
+
+  .cat-cta{ display:inline-block; margin-top:12px; padding:10px 14px; background:var(--accent); border-radius:10px; color:#fff; text-decoration:none; font-weight:700; transition:transform .12s; }
+  .cat-cta:hover{ transform:translateY(-4px); }
+
+  /* Trending (cards with 3D hover) */
+  .trend-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap:18px; margin-top:12px; }
+  .trend-card{
+    padding:18px; border-radius:12px; cursor:pointer; transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow:0 10px 30px rgba(0,0,0,0.36);
+    transform-style:preserve-3d;
+  }
+  .trend-card:hover{ transform: translateY(-12px) rotateX(3deg); box-shadow:0 30px 70px rgba(0,0,0,0.55); }
+  .trend-card h4{ margin:0 0 8px 0; color:var(--accent-2); }
+  .trend-card p{ margin:0; color:#dff7fb; opacity:0.9; }
+
+  /* Paths */
+  .paths-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap:18px; margin-top:12px; }
+  .path-card { background:var(--glass); padding:18px; border-radius:12px; box-shadow:0 12px 34px rgba(0,0,0,0.42); transition:transform .18s; }
+  .path-card:hover { transform:translateY(-10px); }
+  .path-card h4 { margin:0 0 8px 0; color:var(--accent-2); }
+  .path-card p { margin:0 0 12px 0; opacity:0.95; color:#dff7fb; }
+
+  /* Why choose */
+  .why-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap:18px; margin-top:18px; }
+  .why-card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:18px; border-radius:12px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.36); }
+  .why-card h4 { margin:0 0 8px 0; color:var(--accent-2); }
+  .why-card p { margin:0; opacity:0.95; color:#dff7fb; }
+
+  /* footer */
+  footer { margin-top:40px; padding:28px 6%; background: rgba(255,255,255,0.03); border-top:1px solid rgba(255,255,255,0.03); display:flex; justify-content:center; }
+  .footer-grid { max-width:1200px; width:100%; display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; }
+  .socials a { margin-right:12px; color:#eaf7fb; text-decoration:none; font-weight:700; font-size:1.2rem; }
+
+  /* Reveal animations - initial hidden */
+  .reveal { opacity:0; transform:translateY(10px) scale(.995); transition: all .55s cubic-bezier(.2,.9,.2,1); }
+  .reveal.show { opacity:1; transform:none; }
+
+  /* small responsive */
+  @media (max-width:980px){
+    .hero{ grid-template-columns: 1fr; gap:18px; padding:0; }
+    .ai-img{ width:260px; }
+    .container{ padding:0 4%; }
+  }
+  /* ✨ Fade-in Animation */
+.fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.9s ease forwards;
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ✨ Glow Border Effect */
+.glow-box {
+    border: 1px solid rgba(0, 180, 216, 0.25);
+    box-shadow: 0 0 18px rgba(0, 180, 216, 0.25);
+}
+
+/* ✨ Hover Lift */
+.lift:hover {
+    transform: translateY(-8px);
+    transition: 0.25s ease-out;
+    box-shadow: 0 12px 35px rgba(0,191,255,0.28);
+}
+
+/* ✨ Smooth section reveal on scroll */
+.reveal {
+  opacity: 0;
+  transition: all 0.8s ease;
+  transform: translateY(30px);
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+</style>
 </head>
 <body>
 
-  <!-- 🌐 Navigation Bar -->
-  <nav class="navbar">
-    <div class="nav-brand">Learnify.AI</div>
-    <ul class="nav-links">
-      <li><a href="#explore">Explore</a></li>
-      <li><a href="#query">Recommendations</a></li>
-    </ul>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="brand">Learnify.AI</div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/dashboard">Dashboard</a></li>
+    <!-- Quick Rec opens focus on search -->
+    <li><a href="#" id="quickRec">Get Recommendation</a></li>
+    <li><a href="/about">About</a></li>
+    {% if session.get('user') %}
+      <li><a href="/logout">Logout</a></li>
+    {% else %}
+      <li><a href="/login">Login</a></li>
+    {% endif %}
+  </ul>
+</nav>
 
-    <div class="auth-buttons">
+<!-- CONTAINER -->
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="welcome reveal">
       {% if session.get('user') %}
-        <span class="welcome-text">👋 Welcome, {{ session.user }}</span>
-        <a href="/dashboard" class="login-btn">Dashboard</a>
-        <a href="/logout" class="signup-btn">Logout</a>
+        <h1>Welcome back, {{ session['user'] }} 👋</h1>
+        <p class="thought">“Keep learning — your future self will thank you.”</p>
       {% else %}
-        <a href="/login" class="login-btn">Login</a>
-        <a href="/signup" class="signup-btn">Create Account</a>
+        <h1>Welcome to Learnify.AI</h1>
+        <p class="thought">“Search any tech topic and get personalized learning recommendations.”</p>
       {% endif %}
-    </div>
-    <div class="menu-toggle" id="menu-toggle">☰</div>
-  </nav>
 
-  <!-- 🌟 Hero Section -->
-  <header class="hero scroll-reveal">
-    <div class="hero-content">
-      <h1 class="brand">Welcome to <span class="highlight">Learnify.AI</span></h1>
-      <h2 class="tagline">Empowering Learning with Artificial Intelligence</h2>
-      <p class="subtag">
-        Your personalized AI-powered learning companion — explore, learn, and grow with the future of tech.
-      </p>
-      <div class="hero-buttons">
-        <a href="#explore" class="cta-btn">🚀 Get Started</a>
-        {% if not session.get('user') %}
-          <a href="/signup" class="cta-btn secondary">Create Account</a>
-        {% endif %}
+      <!-- SEARCH (Direct → Recommend) -->
+      <form action="/recommend" method="POST" class="search-row" id="mainSearchForm">
+        <input name="user_input" placeholder="Search anything — Python, AI, ML, Cloud..." class="search-input" required>
+        <button class="search-btn" type="submit">Search</button>
+      </form>
+
+      <!-- quick chips -->
+      <div class="chips" style="margin-top:14px;">
+        <div class="chip" onclick="submitCat('Python')">Python</div>
+        <div class="chip" onclick="submitCat('AI')">AI</div>
+        <div class="chip" onclick="submitCat('ML')">ML</div>
+        <div class="chip" onclick="submitCat('Cloud')">Cloud</div>
       </div>
     </div>
-    <div class="hero-image">
-      <img src="{{ url_for('static', filename='images/ai-boy.png') }}" alt="AI Assistant" />
-    </div>
-  </header>
 
-  <!-- ⚡ Quick Learn + Motivation Section -->
-  <section class="quicklearn-section scroll-reveal">
-    <div class="pulse-logo">
-      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Learnify.AI Logo" />
-    </div>
-
-    <div class="quicklearn-container">
-      <!-- Left: Carousel -->
-      <div class="carousel">
-        <h2>🔥 Quick Learn Topics</h2>
-        <div class="carousel-items">
-          <div class="slide active">🤖 Artificial Intelligence</div>
-          <div class="slide">☁️ Cloud Computing</div>
-          <div class="slide">💻 Data Science</div>
-          <div class="slide">⚙️ Machine Learning</div>
-          <div class="slide">🧠 Deep Learning</div>
+    <div class="ai-panel reveal">
+      <div class="ai-card" role="img" aria-label="AI helper">
+        <img src="{{ url_for('static', filename='images/ai-boy.png') }}" alt="AI Boy" class="ai-img">
+        <div class="ai-note">
+          {% if session.get('user') %}
+            <div style="font-weight:700; color:var(--accent-2)">Welcome from Learnify.AI</div>
+            <div style="opacity:0.95; margin-top:6px;">Here’s a curated thought to kickstart your learning today.</div>
+          {% else %}
+            <div style="font-weight:700; color:var(--accent-2)">Hello Learner</div>
+            <div style="opacity:0.95; margin-top:6px;">Ask anything — I’ll find the best learning path for you.</div>
+          {% endif %}
         </div>
       </div>
-
-      <!-- Right: Quotes -->
-      <div class="quotes">
-        <h2>💡 Learning Quotes</h2>
-        <p id="quote-text">“The best way to predict the future is to invent it.”</p>
-      </div>
     </div>
   </section>
 
-  <!-- ⚡ Features Section -->
-  <section class="features scroll-reveal" id="features">
-    <h2>Why Choose <span class="highlight">Learnify.AI</span>?</h2>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="icon">🤖</div>
-        <h3>AI-Powered Insights</h3>
-        <p>Get intelligent recommendations tailored to your learning style using real-time AI analysis.</p>
-      </div>
-      <div class="feature-card">
-        <div class="icon">☁️</div>
-        <h3>Cloud-Connected</h3>
-        <p>Access your progress and resources anywhere, anytime — Learnify.AI grows with you on every device.</p>
-      </div>
-      <div class="feature-card">
-        <div class="icon">💻</div>
-        <h3>Tech-Centric Learning</h3>
-        <p>Explore curated content across cutting-edge fields like ML, Data Science, Web Dev, and Cybersecurity.</p>
+  <!-- EXPLORE BY CATEGORIES -->
+<section class="section fade-up reveal">
+  <h2>Explore by Categories</h2>
+
+  <div class="cat-grid">
+
+    <div class="cat-card glow-box lift" onclick="submitCat('Artificial Intelligence')">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" 
+             alt="AI" class="cat-icon">
+        <h3>Artificial Intelligence</h3>
+        <p>Foundations, models, and AI tools.</p>
+        <div style="margin-top:12px;">
+            <a class="cat-cta" onclick="submitCat('AI')">Explore</a>
+        </div>
+    </div>
+
+    <div class="cat-card glow-box lift" onclick="submitCat('Machine Learning')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2721/2721298.png"
+             alt="ML" class="cat-icon">
+        <h3>Machine Learning</h3>
+        <p>Supervised & Deep Learning models.</p>
+        <div style="margin-top:12px;">
+            <a class="cat-cta" onclick="submitCat('ML')">Explore</a>
+        </div>
+    </div>
+
+    <div class="cat-card glow-box lift" onclick="submitCat('Python')">
+        <img src="https://cdn-icons-png.flaticon.com/512/3098/3098090.png"
+             alt="Python" class="cat-icon">
+        <h3>Python</h3>
+        <p>Core programming concepts & automation.</p>
+        <div style="margin-top:12px;">
+            <a class="cat-cta" onclick="submitCat('Python')">Explore</a>
+        </div>
+    </div>
+
+    <div class="cat-card glow-box lift" onclick="submitCat('Cloud Computing')">
+        <img src="https://cdn-icons-png.flaticon.com/512/4144/4144762.png"
+             alt="Cloud" class="cat-icon">
+        <h3>Cloud Computing</h3>
+        <p>AWS, Azure, GCP & DevOps basics.</p>
+        <div style="margin-top:12px;">
+            <a class="cat-cta" onclick="submitCat('Cloud')">Explore</a>
+        </div>
+    </div>
+
+    <div class="cat-card glow-box lift" onclick="submitCat('Programming')">
+        <img src="https://cdn-icons-png.flaticon.com/512/906/906324.png"
+             alt="Programming" class="cat-icon">
+        <h3>Programming</h3>
+        <p>Logic, algorithms, and full-stack basics.</p>
+        <div style="margin-top:12px;">
+            <a class="cat-cta" onclick="submitCat('Programming')">Explore</a>
+        </div>
+    </div>
+
+    <div class="cat-card glow-box lift" onclick="submitCat('Data Science')">
+        <img src="https://cdn-icons-png.flaticon.com/512/4144/4144224.png"
+             alt="Data Science" class="cat-icon">
+        <h3>Data Science</h3>
+        <p>EDA, Visualization & Pipelines.</p>
+        <div style="margin-top:12px;">
+            <a class="cat-cta" onclick="submitCat('Data Science')">Explore</a>
+        </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Trending Technologies -->
+<section class="section fade-up reveal">
+  <h2>🔥 Trending Technologies</h2>
+
+  <div class="trend-grid">
+
+    <!-- AI -->
+    <div class="trend-card glow-box lift" onclick="submitCat('Artificial Intelligence')">
+      <img src="{{ url_for('static', filename='images/trending/ai.png') }}" 
+           alt="AI" class="trend-img">
+      <h4>🤖 Artificial Intelligence</h4>
+      <p>The most in-demand tech skill of the decade.</p>
+    </div>
+
+    <!-- ML -->
+    <div class="trend-card glow-box lift" onclick="submitCat('Machine Learning')">
+      <img src="{{ url_for('static', filename='images/trending/ml.png') }}" 
+           alt="Machine Learning" class="trend-img">
+      <h4>📈 Machine Learning</h4>
+      <p>Build models that predict and automate.</p>
+    </div>
+
+    <!-- Cybersecurity -->
+    <div class="trend-card glow-box lift" onclick="submitCat('Cybersecurity')">
+      <img src="{{ url_for('static', filename='images/trending/cyber.png') }}" 
+           alt="Cybersecurity" class="trend-img">
+      <h4>🛡 Cybersecurity</h4>
+      <p>Defend systems & build secure apps.</p>
+    </div>
+
+    <!-- Blockchain -->
+    <div class="trend-card glow-box lift" onclick="submitCat('Blockchain')">
+      <img src="{{ url_for('static', filename='images/trending/blockchain.png') }}" 
+           alt="Blockchain" class="trend-img">
+      <h4>⛓ Blockchain</h4>
+      <p>Decentralized systems & smart contracts.</p>
+    </div>
+
+    <!-- DevOps -->
+    <div class="trend-card glow-box lift" onclick="submitCat('DevOps')">
+      <img src="{{ url_for('static', filename='images/trending/devops.png') }}" 
+           alt="DevOps" class="trend-img">
+      <h4>☁ DevOps & Cloud</h4>
+      <p>CI/CD, infra-as-code, and cloud platforms.</p>
+    </div>
+
+  </div>
+</section>
+
+    
+
+<style>
+.trend-card {
+    background: rgba(255,255,255,0.06);
+    padding: 18px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+    transition: .3s;
+    cursor: pointer;
+}
+.trend-card:hover { transform: translateY(-8px); }
+
+.trend-img {
+    width: 100%;
+    max-width: 110px;
+    margin-bottom: 12px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    filter: drop-shadow(0 0 8px rgba(0,0,0,0.4));
+}
+</style>
+
+
+  <!-- Recommended Learning Paths -->
+<section class="section fade-up reveal">
+  <h2>Recommended Learning Paths</h2>
+
+  <div class="paths-grid">
+
+    <!-- Python Developer → ML -->
+    <div class="path-card glow-box lift">
+      <img src="{{ url_for('static', filename='images/paths/python_ml.png') }}" 
+           alt="Python ML Path" 
+           style="width:100%; border-radius:10px; margin-bottom:12px;">
+      <h4>Python Developer → ML</h4>
+      <p>Python basics → Data handling → ML fundamentals → Project</p>
+      <div style="margin-top:12px;">
+        <a class="cat-cta" onclick="submitCat('Python to ML')">Start Path</a>
       </div>
     </div>
-  </section>
 
-  <!-- 📈 AI Learning Insights Section -->
-  <section class="insights-section scroll-reveal">
-    <h2>📊 Learnify.AI in Numbers</h2>
-    <div class="insight-grid">
-      <div class="insight-box">
-        <h3>1,200+</h3>
-        <p>Personalized Recommendations</p>
-      </div>
-      <div class="insight-box">
-        <h3>50+</h3>
-        <p>AI & Tech Topics Covered</p>
-      </div>
-      <div class="insight-box">
-        <h3>300+</h3>
-        <p>Happy Learners</p>
+    <!-- AI Practitioner -->
+    <div class="path-card glow-box lift">
+      <img src="{{ url_for('static', filename='images/paths/ai_practitioner.png') }}" 
+           alt="AI Practitioner Path" 
+           style="width:100%; border-radius:10px; margin-bottom:12px;">
+      <h4>AI Practitioner</h4>
+      <p>Math foundations → ML → Deep Learning → Deployment</p>
+      <div style="margin-top:12px;">
+        <a class="cat-cta" onclick="submitCat('AI Practitioner')">Start Path</a>
       </div>
     </div>
-  </section>
 
-  <!-- 🤖 Meet Your AI Assistant Section -->
-  <section class="ai-assistant scroll-reveal">
-    <div class="assistant-container">
-      <div class="assistant-avatar">
-        <img src="{{ url_for('static', filename='images/ai-boy.png') }}" alt="AI Assistant" />
-      </div>
-      <div class="assistant-dialog">
-        <h2>🤖 Meet Your AI Assistant</h2>
-        <p>
-          Hi there! 👋 I’m your personal AI learning companion.  
-          I’ll help you explore new topics, recommend the best resources,  
-          and make your learning journey smarter and fun!
-        </p>
-        <a href="#query" class="cta-btn">Ask Me Something</a>
+    <!-- Cloud DevOps -->
+    <div class="path-card glow-box lift">
+      <img src="{{ url_for('static', filename='images/paths/cloud_devops.png') }}" 
+           alt="Cloud DevOps Path" 
+           style="width:100%; border-radius:10px; margin-bottom:12px;">
+      <h4>Cloud & DevOps</h4>
+      <p>Linux → Docker → Kubernetes → AWS/Azure basics</p>
+      <div style="margin-top:12px;">
+        <a class="cat-cta" onclick="submitCat('Cloud DevOps')">Start Path</a>
       </div>
     </div>
-  </section>
 
-  <!-- 🧭 Explore Categories -->
-  <section id="explore" class="explore-section">
-    <h2>✨ Explore by Category</h2>
-    <div class="card-grid">
-      <div class="card">
-        <h3>💻 Programming Languages</h3>
-        <p>Master Python, Java, and C++ for strong coding fundamentals.</p>
-        <button class="explore-btn">Explore Now</button>
-      </div>
-      <div class="card">
-        <h3>🤖 AI / ML Frameworks</h3>
-        <p>Dive into TensorFlow, PyTorch, and Scikit-learn with guided tutorials.</p>
-        <button class="explore-btn">Explore Now</button>
-      </div>
-      <div class="card">
-        <h3>☁️ Cloud Tools</h3>
-        <p>Learn AWS, Azure, and Google Cloud for scalable app deployment.</p>
-        <button class="explore-btn">Explore Now</button>
-      </div>
-      <div class="card">
-        <h3>📚 Tech Courses</h3>
-        <p>Discover curated tech learning paths and easy tutorials.</p>
-        <button class="explore-btn">Explore Now</button>
+    <!-- Data Science Track -->
+    <div class="path-card glow-box lift">
+      <img src="{{ url_for('static', filename='images/paths/data_science.png') }}" 
+           alt="Data Science Path" 
+           style="width:100%; border-radius:10px; margin-bottom:12px;">
+      <h4>Data Science Track</h4>
+      <p>Python → Pandas → Visualization → Kaggle projects</p>
+      <div style="margin-top:12px;">
+        <a class="cat-cta" onclick="submitCat('Data Science Track')">Start Path</a>
       </div>
     </div>
-  </section>
 
-  <!-- 🧠 Query Box -->
-  <section id="query" class="query-box">
-    <h2>🔎 What do you want to learn?</h2>
-    <form action="/recommend" method="POST">
-      <textarea name="user_input" placeholder="Example: I want to learn Machine Learning basics..."></textarea>
-      <button type="submit" class="cta-btn">Get Recommendations</button>
-    </form>
-  </section>
+  </div>
+</section>
 
-  <!-- 🦶 Footer -->
-  <footer>
-    <p>Made with ❤️ by Team Learnify.AI</p>
-  </footer>
 
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <!-- Why Choose -->
+<section class="section fade-up reveal">
+  <h2>Why Choose Learnify.AI?</h2>
+  <div class="why-grid">
+
+    <div class="why-card glow-box lift">
+      <img src="{{ url_for('static', filename='images/why/curated.png') }}"
+           style="width:70px; margin-bottom:12px;">
+      <h4>Curated Learning</h4>
+      <p>High-quality resources handpicked for fast learning.</p>
+    </div>
+
+    <div class="why-card glow-box lift">
+      <img src="{{ url_for('static', filename='images/why/personalized.png') }}"
+           style="width:70px; margin-bottom:12px;">
+      <h4>Personalized Paths</h4>
+      <p>AI-based sequences designed for your exact interest.</p>
+    </div>
+
+    <div class="why-card glow-box lift">
+      <img src="{{ url_for('static', filename='images/why/projects.png') }}"
+           style="width:70px; margin-bottom:12px;">
+      <h4>Practical Projects</h4>
+      <p>Do real project work & build a strong portfolio.</p>
+    </div>
+
+    <div class="why-card glow-box lift">
+      <img src="{{ url_for('static', filename='images/why/fast.png') }}"
+           style="width:70px; margin-bottom:12px;">
+      <h4>Fast Recommendations</h4>
+      <p>Instant tutorials & resources to start right away.</p>
+    </div>
+
+  </div>
+</section>
+
+
+</div> <!-- container -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="brand" style="font-size:1.05rem;">Learnify.AI</div>
+      <div style="margin-top:6px; color:#dff7fb; opacity:0.9;">Smart tech recommendations • support@learnify.ai</div>
+    </div>
+
+    <div style="text-align:center;">
+      <div style="opacity:0.9;">© {{ now.year if now else '' }} Learnify.AI</div>
+      <div style="margin-top:6px; color:#dff7fb; opacity:0.9;">Made with ❤️ by Team Learnify</div>
+    </div>
+
+    <div style="text-align:right;">
+      <div class="socials">
+        <a href="#" aria-label="Twitter">🐦</a>
+        <a href="#" aria-label="LinkedIn">💼</a>
+        <a href="#" aria-label="GitHub">🐙</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Hidden form for categories -->
+<form id="catForm" action="/recommend" method="POST" style="display:none;">
+  <input type="hidden" name="user_input" id="catInput">
+</form>
+
+<script>
+  // submit category helper
+  function submitCat(q){
+    document.getElementById('catInput').value = q;
+    document.getElementById('catForm').submit();
+  }
+
+  // QuickRec behaviour: focus the search input on click
+  document.getElementById('quickRec').addEventListener('click', function(e){
+    e.preventDefault();
+    const input = document.querySelector('.search-input');
+    if(input){ input.focus(); input.scrollIntoView({behavior:'smooth', block:'center'}); }
+  });
+
+  // IntersectionObserver reveal for .reveal elements (staggered)
+  (() => {
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry, idx) => {
+        if(entry.isIntersecting){
+          setTimeout(()=> entry.target.classList.add('show'), idx * 80);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(el => io.observe(el));
+  })();
+
+  // small hover-tilt effect for cards (lightweight)
+  document.querySelectorAll('.trend-card, .cat-card, .path-card, .why-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `translateY(-6px) rotateX(${(-y*6).toFixed(2)}deg) rotateY(${(x*6).toFixed(2)}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+
+  // small keyboard shortcut: press "/" to focus search
+  document.addEventListener('keydown', (e) => {
+    if(e.key == '/') {
+      const input = document.querySelector('.search-input');
+      if(input){ e.preventDefault(); input.focus(); }
+    }
+  });
+
+  // Prevent anchor default if they have onclick submitCat (makes clickable on small devices)
+  document.querySelectorAll('a[onclick]').forEach(a=>{
+    a.addEventListener('click', (ev)=> ev.preventDefault());
+  });
+</script>
+<script>
+  function revealOnScroll() {
+    const reveals = document.querySelectorAll(".reveal");
+    for (let i = 0; i < reveals.length; i++) {
+      const windowHeight = window.innerHeight;
+      const elementTop = reveals[i].getBoundingClientRect().top;
+      if (elementTop < windowHeight - 120) {
+        reveals[i].classList.add("active");
+      }
+    }
+  }
+
+  window.addEventListener("scroll", revealOnScroll);
+  revealOnScroll();
+</script>
+
 </body>
 </html>

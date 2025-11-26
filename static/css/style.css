@@ -17,75 +17,120 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 50px;
+  padding: 12px 30px;
   z-index: 1000;
+  flex-wrap: wrap;
 }
+
 .nav-brand {
   font-size: 1.8rem;
   font-weight: 700;
   color: #0077b6;
 }
+
+/* 🌈 Stylish Navbar Buttons */
 .nav-links {
   list-style: none;
   display: flex;
   gap: 25px;
   margin: 0;
   padding: 0;
+  flex-wrap: wrap;
 }
-.nav-links li a {
-  color: #004f7c;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
+
+.nav-links a {
   position: relative;
+  color: #004aad;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 30px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
 }
-.nav-links li a::after {
+
+.nav-links a:hover {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 90, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.nav-links a::after {
   content: "";
   position: absolute;
   width: 0;
   height: 2px;
-  bottom: -5px;
-  left: 0;
-  background: #0096c7;
-  transition: width 0.3s ease;
-}
-.nav-links li a:hover {
-  color: #0096c7;
-}
-.nav-links li a:hover::after {
-  width: 100%;
+  left: 50%;
+  bottom: 4px;
+  background: #004aad;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
 }
 
-/* 📱 Mobile Navbar */
-.menu-toggle {
-  display: none;
-  font-size: 1.8rem;
-  color: #0077b6;
-  cursor: pointer;
+.nav-links a:hover::after {
+  width: 60%;
 }
-@media (max-width: 800px) {
-  .nav-links {
-    display: none;
+
+/* Right side buttons properly centered */
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.login-btn,
+.signup-btn,
+.about-btn {
+  background: linear-gradient(90deg, #00b4d8, #0077b6);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s ease;
+  white-space: nowrap;
+}
+
+.signup-btn {
+  background: linear-gradient(90deg, #48cae4, #0096c7);
+}
+
+.about-btn {
+  background: linear-gradient(90deg, #90e0ef, #00b4d8);
+}
+
+.login-btn:hover,
+.signup-btn:hover,
+.about-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 150, 200, 0.3);
+}
+
+/* 📱 Mobile Responsive */
+@media (max-width: 1024px) {
+  .navbar {
     flex-direction: column;
-    position: absolute;
-    top: 70px;
-    right: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 15px 25px;
+    padding: 10px 20px;
   }
-  .nav-links.active {
-    display: flex;
+
+  .nav-links,
+  .auth-buttons {
+    flex-basis: 100%;
+    justify-content: center;
   }
-  .menu-toggle {
-    display: block;
+
+  .auth-buttons {
+    margin-top: 8px;
   }
 }
 
@@ -146,409 +191,649 @@ body {
   50% { transform: translateY(-10px); }
 }
 
-/* 👨‍🏫 Team Credit */
-.team-credit {
-  background: #f1faff;
-  color: #004f7c;
-  font-weight: 500;
-  padding: 15px 0;
-  border-top: 1px solid #bde0fe;
-  border-bottom: 1px solid #bde0fe;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+/* 🌟 Learning Section */
+.learning-section {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  text-align: center;
+  padding: 70px 10%;
 }
-
-/* ⚡ Features Section */
-.features {
-  padding: 70px 20px;
-  background: linear-gradient(180deg, #ffffff, #f5fbff);
+.learning-section h2 {
+  font-size: 2.3rem;
+  margin-bottom: 15px;
+  color: #004aad;
 }
-.features h2 {
-  color: #0077b6;
-  font-size: 2rem;
-  margin-bottom: 50px;
+.learning-grid {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  flex-wrap: wrap;
+  margin-top: 40px;
 }
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  width: 90%;
-  margin: 0 auto;
-}
-.feature-card {
+.learn-box {
   background: white;
   border-radius: 15px;
-  padding: 25px 20px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-}
-.feature-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 18px rgba(0, 123, 255, 0.15);
-}
-.icon {
-  font-size: 2rem;
-  color: #0096c7;
-  margin-bottom: 10px;
-}
-.feature-card h3 {
-  color: #0077b6;
-  margin-bottom: 8px;
-}
-
-/* 🧭 Explore Section */
-.explore-section {
-  padding: 80px 20px;
-  background: linear-gradient(180deg, #f6fbff, #ffffff);
-}
-.explore-section h2 {
-  color: #0077b6;
-  font-size: 2rem;
-  margin-bottom: 40px;
-}
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  width: 90%;
-  margin: 0 auto;
-}
-.card {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
   padding: 25px;
+  width: 300px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+.learn-box:hover { transform: translateY(-5px); }
+
+/* 🌈 Benefits */
+.benefit-section {
+  background: #004aad;
+  color: white;
+  padding: 80px 8%;
+  text-align: center;
+}
+.benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 40px;
+}
+.benefit-item {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 20px;
+  transition: 0.3s;
+}
+.benefit-item:hover { background: rgba(255,255,255,0.25); }
+
+/* ✨ Fade-up animation */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* ✅ Fix for Explore section buttons not clickable or visible */
+.explore-section {
+  position: relative;
+  z-index: 0;
+  overflow: visible;
+}
+
+.card {
+  position: relative;
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
+  z-index: 5;
 }
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 20px rgba(0, 150, 200, 0.2);
-}
-.card h3 {
-  color: #0077b6;
-  margin-bottom: 10px;
-}
-.card p {
-  color: #333;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
+
 .explore-btn {
-  margin-top: 10px;
+  position: relative;
+  z-index: 10;
   background: linear-gradient(90deg, #00b4d8, #0077b6);
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 8px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
-.explore-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
-}
-
-/* 🧠 Query Box */
-.query-box {
-  background: linear-gradient(180deg, #eaf7ff, #ffffff);
-  padding: 70px 20px;
-  text-align: center;
-}
-.query-box h2 {
-  color: #0077b6;
-  margin-bottom: 20px;
-}
-textarea {
-  width: 70%;
-  height: 120px;
-  border-radius: 12px;
-  border: 1px solid #bde0fe;
-  padding: 15px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  resize: none;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-textarea:focus {
-  outline: none;
-  border-color: #0096c7;
-  box-shadow: 0 0 10px rgba(0, 150, 199, 0.3);
-}
-
-/* 🦶 Footer */
-footer {
-  background: #0077b6;
-  color: white;
-  padding: 20px;
-  margin-top: 50px;
-  font-size: 0.95rem;
-}
-
-/* ✨ Scroll Reveal */
-.scroll-reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.8s ease;
-}
-.scroll-reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* 📱 Responsive */
-@media (max-width: 768px) {
-  .hero {
-    flex-direction: column;
-    padding: 80px 15px;
-  }
-  .brand {
-    font-size: 2.4rem;
-  }
-  textarea {
-    width: 90%;
-  }
-}
-/* 🔐 Auth Buttons (Login / Sign Up) */
-.auth-buttons {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-.login-btn, .signup-btn {
-  text-decoration: none;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 8px 16px;
-  transition: 0.3s ease;
-}
-.login-btn {
-  color: #0077b6;
-  border: 1.5px solid #0077b6;
-}
-.signup-btn {
-  background: linear-gradient(90deg, #00b4d8, #0077b6);
-  color: white;
-}
-.login-btn:hover {
-  background: #0077b6;
-  color: white;
-}
-.signup-btn:hover {
-  background: linear-gradient(90deg, #0096c7, #023e8a);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
-}
-
-/* 🌟 Hero Section CTA buttons */
-.hero-buttons {
-  margin-top: 25px;
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.cta-btn.secondary {
-  background: white;
-  color: #0077b6;
-  border: 1.5px solid #0077b6;
-}
-.cta-btn.secondary:hover {
-  background: #0077b6;
-  color: white;
-}
-/* 🧠 Feedback Section */
-.feedback-section {
-  background: #f8fbff;
-  padding: 40px 20px;
-  border-radius: 15px;
-  margin-top: 40px;
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.1);
-}
-.feedback-section h3 {
-  color: #0077b6;
-  margin-bottom: 15px;
-}
-.feedback-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-.feedback-btn {
-  background: white;
-  border: 2px solid #0077b6;
-  color: #0077b6;
   padding: 10px 20px;
-  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  display: inline-block;
 }
-.feedback-btn:hover {
-  background: #0077b6;
-  color: white;
+
+.explore-btn:hover {
+  background: linear-gradient(90deg, #0096c7, #023e8a);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
-.feedback-box textarea {
-  width: 70%;
-  height: 80px;
+/* 🧭 Force enable Explore section buttons */
+#explore, .explore-section, .card, .explore-btn {
+  position: relative !important;
+  z-index: 999 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* In case an invisible overlay is blocking */
+.hero::after, .quicklearn-section::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Reapply Explore button style */
+.explore-btn {
+  background: linear-gradient(90deg, #00b4d8, #0077b6);
+  color: #fff;
+  border: none;
   border-radius: 10px;
-  border: 1px solid #bde0fe;
-  padding: 10px;
-  font-size: 1rem;
-  resize: none;
-  margin-top: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-.feedback-box button {
-  margin-top: 10px;
-}
-/* 📈 AI Learning Insights */
-.insights-section {
-  background: linear-gradient(180deg, #f9fcff, #ffffff);
-  padding: 80px 20px;
-  text-align: center;
-}
-.insights-section h2 {
-  color: #0077b6;
-  font-size: 2rem;
-  margin-bottom: 40px;
-}
-.insight-grid {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 40px;
-}
-.insight-box {
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.12);
-  padding: 30px 40px;
-  min-width: 220px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
-.insight-box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 150, 255, 0.2);
-}
-.insight-box h3 {
-  color: #0077b6;
-  font-size: 2rem;
-  margin-bottom: 10px;
-}
-.insight-box p {
-  color: #555;
-  font-size: 1rem;
-}
 
-/* 🤖 AI Assistant Section */
-.ai-assistant {
-  background: linear-gradient(90deg, #eaf7ff, #ffffff);
-  padding: 80px 20px;
-  text-align: center;
+.explore-btn:hover {
+  background: linear-gradient(90deg, #0096c7, #023e8a);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
-.assistant-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 40px;
-}
-.assistant-avatar img {
-  width: 200px;
-  border-radius: 50%;
-  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
-  animation: float 3s ease-in-out infinite;
-}
-.assistant-dialog {
-  max-width: 450px;
-  text-align: left;
-}
-.assistant-dialog h2 {
-  color: #0077b6;
-  margin-bottom: 15px;
-}
-.assistant-dialog p {
-  color: #333;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-/* 🌟 Quick Learn + Quotes Section */
-.quicklearn-section {
-  background: linear-gradient(180deg, #f6fbff, #ffffff);
-  padding: 80px 20px;
-  text-align: center;
+/* ✨ Animated Explore Buttons */
+.explore-btn {
+  background: linear-gradient(90deg, #00b4d8, #0077b6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
 }
 
-.pulse-logo {
-  margin-bottom: 30px;
-  animation: pulseGlow 3s infinite ease-in-out;
-}
-.pulse-logo img {
-  width: 120px;
-  border-radius: 50%;
-  box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
-}
-
-@keyframes pulseGlow {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(0, 191, 255, 0.4); }
-  50% { transform: scale(1.1); box-shadow: 0 0 45px rgba(0, 191, 255, 0.6); }
+.explore-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.4), transparent);
+  transition: left 0.5s ease;
 }
 
-.quicklearn-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  margin-top: 20px;
+.explore-btn:hover::before {
+  left: 100%;
 }
 
-.carousel, .quotes {
+.explore-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.35);
+}
+/* ✨ Modern Explore Cards */
+.explore-subtitle {
+  color: #444;
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+  opacity: 0.85;
+}
+
+.modern-card {
   background: white;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  padding: 30px 25px;
-  width: 300px;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.12);
+  transition: all 0.35s ease;
+  text-align: center;
+  border-top: 5px solid transparent;
 }
 
-.carousel h2, .quotes h2 {
+.modern-card:hover {
+  transform: translateY(-6px);
+  border-top: 5px solid #00b4d8;
+  box-shadow: 0 12px 30px rgba(0, 123, 255, 0.2);
+}
+
+.modern-card .icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+
+.modern-card h3 {
   color: #0077b6;
-  margin-bottom: 15px;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
 }
 
-.slide {
-  display: none;
-  font-size: 1.2rem;
-  font-weight: 600;
+.modern-card p {
   color: #333;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  min-height: 60px;
 }
-.slide.active {
-  display: block;
-  animation: fadeSlide 1s ease-in-out;
+
+/* Smooth entrance animation */
+.scroll-reveal.visible .modern-card {
+  animation: fadeUp 0.8s ease both;
 }
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(10px); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-#quote-text {
-  font-style: italic;
-  color: #444;
-  font-size: 1rem;
-  transition: opacity 0.6s ease;
+/* 🎨 Explore by Category — Two-Row Grid Layout */
+.explore-section {
+  background: linear-gradient(180deg, #f0faff, #ffffff);
+  padding: 80px 5%;
+  text-align: center;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .quicklearn-container {
+.explore-section h2 {
+  color: #0077b6;
+  font-size: 2.4rem;
+  margin-bottom: 10px;
+}
+
+.explore-subtitle {
+  color: #555;
+  font-size: 1.1rem;
+  margin-bottom: 50px;
+}
+
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}
+
+.explore-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.1);
+  padding: 30px 20px;
+  transition: all 0.3s ease;
+  border-top: 4px solid transparent;
+}
+
+.explore-card:hover {
+  transform: translateY(-6px);
+  border-top: 4px solid #00b4d8;
+  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.15);
+}
+
+.explore-card .icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.explore-card h3 {
+  color: #0077b6;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.explore-card p {
+  color: #333;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.explore-btn {
+  background: linear-gradient(90deg, #00b4d8, #0077b6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.explore-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
+}
+
+/* Responsive Layouts */
+@media (max-width: 1024px) {
+  .explore-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .explore-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Why Choose Learnify.AI Section */
+.why-learnify {
+  background: #f0f7ff;
+  padding: 70px 10%;
+  text-align: center;
+}
+
+.why-learnify h2 {
+  color: #0077b6;
+  font-size: 2.2rem;
+  margin-bottom: 50px;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.why-card {
+  background: white;
+  border-radius: 15px;
+  padding: 30px 20px;
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.12);
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.why-card h3 {
+  color: #0077b6;
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
+
+.why-card p {
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.why-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 123, 255, 0.2);
+}
+
+/* Responsive Grid */
+@media (max-width: 1024px) {
+  .why-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .why-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* 🌙 Dark Recommendations Page */
+.dark-theme {
+  background: linear-gradient(135deg, #0b132b, #1c2541);
+  color: #ffffff;
+}
+
+/* ✨ Summary Section */
+.summary-section {
+  padding: 120px 10% 50px;
+  text-align: center;
+  color: #e0f7ff;
+}
+.summary-section h2 {
+  font-size: 2rem;
+  color: #00b4d8;
+}
+.summary-text {
+  margin-top: 15px;
+  font-size: 1.1rem;
+  color: #c8e6f9;
+}
+
+/* 📚 Two-Column Grid */
+.recommend-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding: 40px 10%;
+}
+.recommend-column {
+  flex: 1;
+  min-width: 320px;
+}
+
+/* 📘 Resource Cards */
+.recommend-card {
+  background: #1d2b46;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+}
+.recommend-card:hover {
+  transform: translateY(-5px);
+  background: #243b61;
+}
+.recommend-card h4 {
+  color: #00d4ff;
+}
+.recommend-card p {
+  color: #cbd5e1;
+}
+
+/* 🎬 Video Cards */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+}
+.video-card {
+  background: #1d2b46;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+.video-card:hover {
+  transform: translateY(-5px);
+}
+.video-card img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.video-card h4 {
+  color: #00d4ff;
+  font-size: 1rem;
+}
+
+/* 🔘 Buttons */
+.cta-btn.small {
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  background: linear-gradient(90deg, #00b4d8, #0077b6);
+  border-radius: 8px;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+.cta-btn.small:hover {
+  box-shadow: 0 0 12px rgba(0,180,255,0.5);
+  transform: scale(1.05);
+}
+
+/* 🔙 Back Button */
+.back-home {
+  text-align: center;
+  margin: 60px 0;
+}
+
+/* 📱 Responsive */
+@media (max-width: 900px) {
+  .recommend-grid {
     flex-direction: column;
     align-items: center;
   }
+  .recommend-column {
+    width: 100%;
+  }
 }
-.welcome-text {
-  color: #0077b6;
+/* ✅ Fix for dark-theme visibility */
+.dark-theme {
+  background: linear-gradient(135deg, #0b132b, #1c2541);
+  color: #ffffff;
+  min-height: 100vh;
+  padding-top: 100px; /* ensures content isn't hidden under navbar */
+}
+
+.summary-section,
+.recommend-grid,
+.back-home,
+footer {
+  position: relative;
+  z-index: 5;
+}
+
+.summary-section h2,
+.summary-section p {
+  color: #e3f7ff !important;
+}
+
+.recommend-card,
+.video-card {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure containers have padding */
+.summary-section, .recommend-grid {
+  padding: 60px 10%;
+}
+.ai-motivation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  padding: 60px 10%;
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.ai-text {
+  flex: 1 1 400px;
+  font-size: 1.2rem;
+  color: #caf0f8;
+  text-align: left;
+}
+
+.ai-text h2 {
+  color: #00b4d8;
+  margin-bottom: 10px;
+}
+
+.ai-image img {
+  width: 200px;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0,191,255,0.3);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.feedback-popup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(5px);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.feedback-content {
+  background: #1b263b;
+  padding: 30px;
+  border-radius: 15px;
+  width: 350px;
+  text-align: center;
+  color: white;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+.feedback-ai {
+  width: 90px;
+  margin-bottom: 10px;
+}
+
+.feedback-content textarea {
+  width: 90%;
+  height: 80px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  resize: none;
+  margin-top: 10px;
+}
+
+.submit-feedback {
+  background: #00b4d8;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  color: white;
   font-weight: 600;
-  margin-right: 15px;
 }
+
+.submit-feedback:hover {
+  background: #0096c7;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+.avatar-img img {
+    width:56px;
+    height:56px;
+    border-radius:12px;
+    object-fit: cover;
+    box-shadow:0 6px 18px rgba(0,0,0,0.4);
+}
+<style>
+.search-section {
+  text-align: center;
+  padding: 60px 20px;
+  color: white;
+}
+
+.search-section h2 {
+  font-size: 2rem;
+  margin-bottom: 18px;
+  color: #90e0ef;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.search-box input {
+  width: 50%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+.search-box button {
+  padding: 14px 24px;
+  background: linear-gradient(90deg,#00b4d8,#0077b6);
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.search-box button:hover {
+  background: #0096c7;
+}
+</style>

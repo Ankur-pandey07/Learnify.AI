@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About • Learnify.AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root{
+        --bg1:#0b132b;
+        --bg2:#1c2541;
+        --glass: rgba(255,255,255,0.06);
+        --accent:#00b4d8;
+        --accent-2:#90e0ef;
+        --muted: rgba(255,255,255,0.85);
+    }
+
+    body{
+        margin:0;
+        font-family:"Poppins", sans-serif;
+        background:linear-gradient(135deg,var(--bg1),var(--bg2));
+        color:white;
+        -webkit-font-smoothing:antialiased;
+    }
+
+    /* NAVBAR */
+    .navbar{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:20px 8%;
+        background:rgba(255,255,255,0.04);
+        backdrop-filter:blur(10px);
+        position:sticky;
+        top:0;
+        z-index:50;
+    }
+    .nav-brand{
+        font-size:1.7rem;
+        font-weight:700;
+        color:var(--accent-2);
+    }
+    .nav-links{
+        display:flex;
+        gap:25px;
+        list-style:none;
+    }
+    .nav-links a{
+        text-decoration:none;
+        color:#eaf7fb;
+        font-weight:600;
+        transition:.3s;
+    }
+    .nav-links a:hover{color:var(--accent);}
+
+    /* HEADER */
+    .header-section{
+        text-align:center;
+        padding:80px 10% 40px;
+        animation: fadeUp 0.7s ease-in-out;
+    }
+    .header-title{
+        font-size:2.7rem;
+        font-weight:700;
+        color:var(--accent-2);
+    }
+    .header-sub{
+        font-size:1.2rem;
+        margin-top:10px;
+        opacity:0.9;
+    }
+
+    /* MISSION */
+    .glass-box{
+        max-width:1100px;
+        margin:40px auto;
+        padding:28px;
+        background:var(--glass);
+        border-radius:16px;
+        box-shadow:0 10px 35px rgba(0,0,0,0.45);
+        backdrop-filter:blur(12px);
+        animation: fadeUp 0.8s ease;
+    }
+    .glass-box h2{
+        color:var(--accent-2);
+        margin-bottom:12px;
+        font-size:1.8rem;
+    }
+    .glass-box p{
+        opacity:0.93;
+        line-height:1.5;
+    }
+
+    /* FEATURES */
+    .features-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+        gap:22px;
+        margin-top:25px;
+    }
+    .feature-card{
+        background:rgba(255,255,255,0.05);
+        padding:22px;
+        border-radius:16px;
+        box-shadow:0 8px 25px rgba(0,0,0,0.4);
+        transition:.3s;
+        backdrop-filter:blur(10px);
+    }
+    .feature-card:hover{
+        transform:translateY(-6px);
+        box-shadow:0 15px 35px rgba(0,0,0,0.5);
+    }
+    .feature-card h3{
+        color:var(--accent-2);
+        margin-bottom:8px;
+    }
+    .feature-card p{
+        opacity:0.9;
+        font-size:0.95rem;
+    }
+
+    /* TEAM */
+    .team-grid{
+        margin-top:25px;
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+        gap:20px;
+        text-align:center;
+    }
+    .team-card{
+        padding:20px;
+        background:rgba(255,255,255,0.05);
+        border-radius:16px;
+        box-shadow:0 10px 25px rgba(0,0,0,0.45);
+        backdrop-filter:blur(10px);
+        transition:.3s;
+    }
+    .team-card:hover{
+        transform:translateY(-6px);
+    }
+    .team-img{
+        width:110px;
+        height:110px;
+        border-radius:50%;
+        margin-bottom:10px;
+        border:3px solid var(--accent);
+        object-fit:cover;
+    }
+    .team-card h4{
+        margin:8px 0 4px;
+        color:var(--accent-2);
+    }
+    .team-card small{
+        opacity:0.8;
+    }
+
+    /* FOOTER */
+    footer{
+        margin-top:60px;
+        padding:26px 8%;
+        background:rgba(255,255,255,0.05);
+        text-align:center;
+        border-top:1px solid rgba(255,255,255,0.1);
+    }
+
+    @keyframes fadeUp{
+        from{opacity:0; transform:translateY(20px);}
+        to{opacity:1; transform:translateY(0);}
+    }
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-brand">Learnify.AI</div>
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/about">About</a></li>
+        {% if session.get('user') %}
+        <li><a href="/logout">Logout</a></li>
+        {% else %}
+        <li><a href="/login">Login</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<!-- HEADER -->
+<section class="header-section">
+    <div class="header-title">About Learnify.AI</div>
+    <div class="header-sub">Your personalized AI-powered tech learning companion.</div>
+</section>
+
+<!-- MISSION -->
+<div class="glass-box">
+    <h2>Our Mission</h2>
+    <p>
+        Learnify.AI was created to help learners discover the best learning resources 
+        instantly — using AI-powered recommendations based on interest, sentiment, 
+        mood, and learning patterns.  
+        Our mission is to make your learning journey smarter, faster, and more effective.
+    </p>
+</div>
+
+<!-- FEATURES -->
+<div class="glass-box">
+    <h2>What Makes Learnify.AI Unique?</h2>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <h3>🎯 Personalized Learning</h3>
+            <p>Get recommendations tailored to your queries, mood, and interests.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>⚡ Instant Suggestions</h3>
+            <p>Fast access to curated tutorials, YouTube videos, and online resources.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>📊 Smart Dashboard</h3>
+            <p>Track your learning, moods, feedback, and trends over time.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>🤖 AI-Powered Insights</h3>
+            <p>Understand what you learn the most and get smart suggestions.</p>
+        </div>
+    </div>
+</div>
+
+<!-- TEAM -->
+<div class="glass-box">
+    <h2>Meet the Team</h2>
+
+    <div class="team-grid">
+
+        <div class="team-card">
+            <img src="{{ url_for('static', filename='images/team1.jpg') }}" class="team-img">
+            <h4>Aditya Patel</h4>
+            <small>Founder by learnify.AI/Developer</small>
+        </div>
+
+        <div class="team-card">
+            <img src="{{ url_for('static', filename='images/team2.jpg') }}" class="team-img">
+            <h4>Ankur Pandey</h4>
+            <small>Backend Developer/Designer</small>
+        </div>
+
+        <div class="team-card">
+            <img src="{{ url_for('static', filename='images/team3.jpg') }}" class="team-img">
+            <h4>Learnify AI Bot</h4>
+            <small>AI Assistant</small>
+        </div>
+
+    </div>
+</div>
+<!-- FOOTER -->
+<footer>
+    © {{ now.year if now else '' }} Learnify.AI • Made with ❤️ for learners
+</footer>
+
+</body>
+</html>
