@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel – Learnify.AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: #0b132b;
+        color: white;
+        padding: 20px;
+    }
+    h1 {
+        color: #90e0ef;
+        text-align: center;
+    }
+    .section-box {
+        background: rgba(255,255,255,0.05);
+        padding: 18px;
+        border-radius: 12px;
+        margin: 25px auto;
+        max-width: 900px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+    }
+    th, td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    th {
+        color: #ffd700;
+    }
+    a {
+        color: #90e0ef;
+        font-weight: 600;
+        text-decoration: none;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>🔐 Admin Dashboard</h1>
+
+<div class="section-box">
+    <h2>Total Users</h2>
+    <table>
+        <tr><th>ID</th><th>Username</th><th>Email</th></tr>
+
+        {% for u in users %}
+        <tr>
+            <td>{{ u[0] }}</td>
+            <td>{{ u[1] }}</td>
+            <td>{{ u[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="section-box">
+    <h2>All Search Queries</h2>
+    <table>
+        <tr><th>User</th><th>Query</th><th>Topic</th><th>Mood</th></tr>
+
+        {% for f in feedback %}
+        <tr>
+            <td>{{ f[0] }}</td>
+            <td>{{ f[1] }}</td>
+            <td>{{ f[2] }}</td>
+            <td>{{ f[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<br>
+<div style="text-align:center;">
+    <a href="/logout">Logout Admin</a>
+</div>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+        <th>User</th>
+        <th>Query</th>
+        <th>Topic</th>
+        <th>Mood</th>
+        <th>Feedback</th>
+        <th>Date</th>
+    </tr>
+
+    {% for u, q, t, m, f, d in records %}
+    <tr>
+        <td>{{ u }}</td>
+        <td>{{ q }}</td>
+        <td>{{ t }}</td>
+        <td>{{ m }}</td>
+        <td>{{ f }}</td>
+        <td>{{ d }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

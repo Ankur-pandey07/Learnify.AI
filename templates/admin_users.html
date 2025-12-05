@@ -1,0 +1,161 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<h2 style="color:#90e0ef; margin-bottom:10px;">Users</h2>
+
+<div style="padding:18px;">    
+
+    <!-- SEARCH BAR -->
+    <div style="margin-bottom:15px;">
+        <input id="userSearch" placeholder="Search users..."
+               style="padding:9px 12px; width:260px; border-radius:8px;
+                      background:transparent; color:#fff;
+                      border:1px solid rgba(255,255,255,0.15);">
+    </div>
+
+    <!-- USERS TABLE CARD -->
+    <div style="overflow:auto; background:rgba(255,255,255,0.05);
+                padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+
+        <table id="usersTable" style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:rgba(255,255,255,0.08);">
+                    <th style="padding:10px;">ID</th>
+                    <th style="padding:10px;">Username</th>
+                    <th style="padding:10px;">Email</th>
+                    <th style="padding:10px;">Created</th>
+                    <th style="padding:10px; text-align:right;">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for u in users %}
+                <tr data-id="{{ u.id }}">
+                    <td style="padding:10px;">{{ u.id }}</td>
+                    <td style="padding:10px;">{{ u.username }}</td>
+                    <td style="padding:10px;">{{ u.email }}</td>
+                    <td class="small" style="padding:10px;">{{ u.created_at }}</td>
+
+                    <td style="text-align:right; padding:10px; white-space:nowrap;">
+
+                        <!-- VIEW FEEDBACK BUTTON -->
+                        <button class="action-btn"
+                                style="padding:6px 10px; border-radius:8px; background:#00b4d8; color:#06202a;
+                                       font-weight:600; border:0; cursor:pointer;"
+                                onclick="location.href='/admin/user/{{ u.id }}/feedback'">
+                            <i class="fa-solid fa-eye"></i> View
+                        </button>
+
+                        <!-- EDIT USER -->
+                        <button class="action-btn"
+                                style="padding:6px 10px; border-radius:8px; background:#ffd166; color:#000;
+                                       font-weight:600; border:0; cursor:pointer;"
+                                onclick="openEditUser('{{ u.id }}', '{{ u.username }}', '{{ u.email }}')">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+
+                        <!-- DELETE USER -->
+                        <button class="action-btn btn-delete"
+                                style="padding:6px 10px; border-radius:8px; background:#ff6b6b; color:white;
+                                       font-weight:600; border:0; cursor:pointer;"
+                                onclick="deleteUser('{{ u.id }}', this)">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+<script>
+
+// ------------------------------------------
+// SEARCH USERS
+// ------------------------------------------
+document.getElementById("userSearch").addEventListener("input", function(){
+    const q = this.value.toLowerCase();
+    document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+});
+
+
+// ------------------------------------------
+// DELETE USER
+// ------------------------------------------
+async function deleteUser(id, btn){
+    const res = await Swal.fire({
+        title: "Delete this user?",
+        text: "All their data will be lost!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Delete"
+    });
+
+    if(!res.isConfirmed) return;
+
+    const resp = await fetch(`/admin/delete_user?id=${id}`, {
+        method: "DELETE"
+    });
+
+    const data = await resp.json();
+
+    if(data.success){
+        Swal.fire("Deleted", "User removed", "success");
+        btn.closest("tr").remove();
+    } else {
+        Swal.fire("Error", data.message || "Delete failed", "error");
+    }
+}
+
+
+// ------------------------------------------
+// EDIT USER POPUP (New Feature)
+// ------------------------------------------
+function openEditUser(id, username, email){
+    Swal.fire({
+        title: "Edit User",
+        html: `
+            <input id="editUsername" class="swal2-input" placeholder="Username" value="${username}">
+            <input id="editEmail" class="swal2-input" placeholder="Email" value="${email}">
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        preConfirm: () => {
+            return {
+                username: document.getElementById('editUsername').value,
+                email: document.getElementById('editEmail').value
+            }
+        }
+    }).then(async result => {
+        if(!result.isConfirmed) return;
+
+        const data = result.value;
+
+        const resp = await fetch(`/admin/update_user?id=${id}`, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(data)
+        });
+
+        const res = await resp.json();
+
+        if(res.success){
+            Swal.fire("Updated!", "User info updated", "success");
+            location.reload();
+        } else {
+            Swal.fire("Error", res.message || "Update failed", "error");
+        }
+    });
+}
+
+</script>
+
+{% endblock %}

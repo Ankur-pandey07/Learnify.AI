@@ -1,0 +1,126 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<div style="display:flex; justify-content:space-between; align-items:center;">
+    <h2 style="color:#90e0ef; margin-bottom:14px;">
+        Feedback — {{ username }}
+    </h2>
+
+    <button onclick="location.href='/admin/users'"
+            style="padding:8px 14px; border-radius:8px; background:#00b4d8; 
+                   color:#06202a; font-weight:600; border:0; cursor:pointer;">
+        ← Back to Users
+    </button>
+</div>
+
+<!-- SEARCH BAR -->
+<div style="margin-bottom:15px;">
+    <input id="feedbackSearch" placeholder="Search feedback..."
+           style="padding:10px 12px; width:300px; border-radius:8px;
+                  background:transparent; color:#fff;
+                  border:1px solid rgba(255,255,255,0.15);">
+</div>
+
+
+<!-- USER SUMMARY CARD -->
+<div style="background:rgba(255,255,255,0.08); padding:16px;
+            border-radius:12px; margin-bottom:20px;">
+
+    <h3 style="margin:0; color:#ffd166;">User Summary</h3>
+    <p style="margin:6px 0 0 0; color:#ccc; line-height:1.6;">
+        Total Feedback: <b style="color:#fff;">{{ feedbacks|length }}</b><br>
+        First Activity: <b style="color:#fff;">{{ first_date }}</b><br>
+        Last Activity: <b style="color:#fff;">{{ last_date }}</b>
+    </p>
+</div>
+
+
+<!-- FEEDBACK TABLE -->
+<div style="overflow:auto; background:rgba(255,255,255,0.05);
+            padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+
+    <table id="feedbackTable" style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="background:rgba(255,255,255,0.08);">
+                <th style="padding:10px;">ID</th>
+                <th style="padding:10px;">Query</th>
+                <th style="padding:10px;">Feedback</th>
+                <th style="padding:10px;">Mood</th>
+                <th style="padding:10px;">Topic</th>
+                <th style="padding:10px;">Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for f in feedbacks %}
+            <tr>
+                <td style="padding:10px;">{{ f.id }}</td>
+
+                <td style="padding:10px; max-width:260px; white-space:nowrap;
+                           overflow:hidden; text-overflow:ellipsis;">
+                    {{ f.user_query }}
+                </td>
+
+                <td style="padding:10px; max-width:260px; white-space:nowrap;
+                           overflow:hidden; text-overflow:ellipsis;">
+                    {{ f.feedback or '—' }}
+                </td>
+
+                <td style="padding:10px;">{{ f.mood }}</td>
+                <td style="padding:10px;">{{ f.topic }}</td>
+
+                <td class="small" style="padding:10px;">{{ f.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<!-- TIMELINE VIEW (PREMIUM LOOK) -->
+<h3 style="margin-top:30px; color:#90e0ef;">Activity Timeline</h3>
+
+<div style="border-left:3px solid #00b4d8; margin-left:20px; padding-left:20px;">
+
+    {% for f in feedbacks %}
+    <div style="margin-bottom:25px; position:relative;">
+
+        <!-- circle dot -->
+        <div style="position:absolute; left:-31px; top:8px; width:16px; height:16px;
+                    background:#00b4d8; border-radius:50%; box-shadow:0 0 8px #00b4d8;"></div>
+
+        <div style="background:rgba(255,255,255,0.05); padding:12px 16px;
+                    border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+
+            <div style="color:#ffd166; font-size:0.9rem; margin-bottom:6px;">
+                {{ f.created_at }}
+            </div>
+
+            <div style="color:#fff; font-weight:600;">
+                {{ f.user_query }}
+            </div>
+
+            <div style="color:#aaa; margin-top:4px; font-size:0.9rem;">
+                {{ f.feedback or "No feedback" }}
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+<!-- JS -->
+<script>
+// SEARCH FILTER
+document.getElementById("feedbackSearch").addEventListener("input", function(){
+    const q = this.value.toLowerCase();
+    document.querySelectorAll("#feedbackTable tbody tr").forEach(tr=>{
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<style>
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 20px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 16px rgba(0,234,255,0.15);
+    transition: 0.3s;
+}
+.stat-card:hover {
+    box-shadow: 0 0 25px rgba(0,234,255,0.5);
+    transform: translateY(-4px);
+}
+
+.stat-title {
+    font-size: 0.95rem;
+    color: #9bdfff;
+}
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 6px;
+    color: #00eaff;
+    text-shadow: 0 0 10px #00eaff;
+}
+
+.section-title {
+    margin-top: 40px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #00eaff;
+}
+
+.neon-box {
+    padding:20px;
+    background:rgba(255,255,255,0.04);
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.12);
+    box-shadow:0 0 14px rgba(0,234,255,0.1);
+}
+
+.list-item {
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.list-item:last-child { border-bottom: 0; }
+
+.username {
+    font-weight:600;
+    color:#9bdfff;
+}
+</style>
+
+
+<!-- ============================
+      TOP STAT CARDS
+================================= -->
+<div class="dashboard-grid">
+
+    <div class="stat-card">
+        <div class="stat-title">Total Users</div>
+        <div class="stat-value">{{ total_users }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Total Feedback</div>
+        <div class="stat-value">{{ total_feedback }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Active Logs</div>
+        <div class="stat-value">{{ rows|length }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Top Topic</div>
+        <div class="stat-value">
+            {{ (topic_data | dictsort(true) | first)[0] if topic_data else "—" }}
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- ============================
+      MINI CHARTS SECTION
+================================= -->
+<h2 class="section-title">Analytics</h2>
+
+<div class="dashboard-grid">
+
+    <div class="neon-box">
+        <canvas id="userGrowthChart"></canvas>
+    </div>
+
+    <div class="neon-box">
+        <canvas id="weeklyFeedbackChart"></canvas>
+    </div>
+
+</div>
+
+
+
+<!-- ============================
+      TOP USERS LEADERBOARD
+================================= -->
+<h2 class="section-title">Top Users</h2>
+
+<div class="neon-box">
+    {% for u in user_list %}
+        <div class="list-item">
+            <div class="username">
+                <i class="fa-solid fa-user"></i> {{ u }}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+
+
+<!-- ============================
+      RECENT LOGS SECTION
+================================= -->
+<h2 class="section-title">Recent Logs</h2>
+
+<div class="neon-box">
+{% for log in rows[:10] %}
+    <div class="list-item">
+        <div>
+            <strong>{{ log[0] }}</strong> — {{ log[1][:40] }}...
+        </div>
+        <div style="opacity:0.7">{{ log[5] }}</div>
+    </div>
+{% endfor %}
+</div>
+
+
+
+
+<!-- ============================
+      CHART JS SCRIPTS
+================================= -->
+<script>
+
+// USER GROWTH (FAKE DYNAMIC COUNT)
+const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+new Chart(userGrowthCtx, {
+    type: 'line',
+    data: {
+        labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+        datasets: [{
+            label: "Users / Week",
+            data: [
+                {{ total_users - 6 }},
+                {{ total_users - 4 }},
+                {{ total_users - 3 }},
+                {{ total_users - 2 }},
+                {{ total_users - 1 }},
+                {{ total_users }},
+                {{ total_users }}
+            ],
+            fill: false,
+            borderWidth: 3,
+            borderColor: "#00eaff",
+            tension: 0.4,
+            pointBackgroundColor: "#00eaff",
+            pointRadius: 4
+        }]
+    },
+    options: {
+        plugins: { legend: { display:false } },
+        scales: {
+            x: { ticks:{ color:"#9bdfff" }},
+            y: { ticks:{ color:"#9bdfff" }}
+        }
+    }
+});
+
+
+// WEEKLY FEEDBACK TREND
+const feedbackCtx = document.getElementById('weeklyFeedbackChart').getContext('2d');
+new Chart(feedbackCtx, {
+    type: 'bar',
+    data: {
+        labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+        datasets: [{
+            label: "Feedback",
+            data: [
+                {{ total_feedback - 6 }},
+                {{ total_feedback - 5 }},
+                {{ total_feedback - 4 }},
+                {{ total_feedback - 3 }},
+                {{ total_feedback - 2 }},
+                {{ total_feedback - 1 }},
+                {{ total_feedback }}
+            ],
+            backgroundColor: "#6a5af9"
+        }]
+    },
+    options: {
+        plugins: { legend: { display:false } },
+        scales: {
+            x: { ticks:{ color:"#9bdfff" }},
+            y: { ticks:{ color:"#9bdfff" }}
+        }
+    }
+});
+
+</script>
+
+{% endblock %}

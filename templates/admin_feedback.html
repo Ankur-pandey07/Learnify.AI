@@ -1,0 +1,270 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<style>
+/* CARD HEADER */
+.table-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.search-box {
+    padding:10px 12px;
+    width:260px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.05);
+    color:white;
+    backdrop-filter:blur(6px);
+}
+
+.feedback-table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+.feedback-table th {
+    padding:14px 10px;
+    text-align:left;
+    color:#90e0ef;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    background:rgba(255,255,255,0.03);
+}
+
+.feedback-table td {
+    padding:12px 10px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    color:#ddd;
+}
+
+/* Hover Row */
+.feedback-table tbody tr:hover {
+    background:rgba(255,255,255,0.06);
+    transition:0.2s;
+}
+
+/* Badge */
+.badge {
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    color:#06202a;
+    font-weight:600;
+}
+.badge-topic { background:#00b4d8; }
+.badge-mood { background:#ffb703; }
+.badge-feedback { background:#90be6d; }
+
+/* Buttons */
+.action-btn {
+    padding:6px 10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:13px;
+    margin-left:6px;
+}
+
+.btn-view { background:#48cae4; color:#06202a; }
+.btn-view:hover { background:#90e0ef; }
+
+.btn-edit { background:#ffd166; color:#06202a; }
+.btn-edit:hover { background:#ffe08f; }
+
+.btn-delete { background:#ef476f; color:white; }
+.btn-delete:hover { background:#ff6b8a; }
+
+/* Modal Text */
+.swal2-popup {
+    font-family:"Poppins";
+    color:#06202a;
+}
+
+</style>
+
+
+<!-- PAGE HEADER -->
+<div class="table-header">
+    <h2 style="color:#90e0ef; margin:0;">Feedback Management</h2>
+
+    <input id="feedbackSearch" class="search-box" placeholder="Search feedback...">
+</div>
+
+
+<!-- TABLE -->
+<div style="overflow:auto; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px;">
+
+<table id="feedbackTable" class="feedback-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Query</th>
+            <th>Topic</th>
+            <th>Mood</th>
+            <th>Feedback</th>
+            <th>Date</th>
+            <th style="text-align:right">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for f in feedbacks %}
+        <tr data-id="{{ f['id'] }}">
+
+            <td>{{ f['id'] }}</td>
+
+            <td><strong>{{ f['username'] }}</strong></td>
+
+            <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                {{ f['user_query'] }}
+            </td>
+
+            <td><span class="badge badge-topic">{{ f['topic'] }}</span></td>
+
+            <td><span class="badge badge-mood">{{ f['mood'] }}</span></td>
+
+            <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <span class="badge badge-feedback">{{ f['feedback'] }}</span>
+            </td>
+
+            <td class="small">{{ f['created_at'] }}</td>
+
+            <td style="text-align:right;">
+
+                <!-- VIEW -->
+                <button class="action-btn btn-view"
+                    onclick='viewFeedback({{ f["user_query"]|tojson }},
+                                           {{ f["feedback"]|tojson }},
+                                           {{ f["created_at"]|tojson }})'>
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+
+                <!-- EDIT -->
+                <button class="action-btn btn-edit"
+                    onclick='editFeedback({{ f["id"] }},
+                                          {{ f["user_query"]|tojson }},
+                                          {{ f["feedback"]|tojson }},
+                                          {{ f["topic"]|tojson }},
+                                          {{ f["mood"]|tojson }})'>
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+
+                <!-- DELETE -->
+                <button class="action-btn btn-delete"
+                    onclick="deleteFeedback('{{ f['id'] }}', this)">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+</div>
+
+
+<script>
+
+/* SEARCH */
+document.getElementById("feedbackSearch").addEventListener("input", function(){
+    const q = this.value.toLowerCase();
+    document.querySelectorAll("#feedbackTable tbody tr").forEach(tr => {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+});
+
+
+/* VIEW POPUP */
+function viewFeedback(query, feedback, date) {
+    Swal.fire({
+        title: "<strong>Feedback Details</strong>",
+        html: `
+            <div style='text-align:left'>
+                <p><strong>Query:</strong><br>${query}</p>
+                <p><strong>Feedback:</strong><br>${feedback}</p>
+                <p><strong>Date:</strong> ${date}</p>
+            </div>
+        `,
+        width: 600
+    });
+}
+
+
+/* EDIT FEEDBACK */
+async function editFeedback(id, query, feedback, topic, mood) {
+
+    const { value: save } = await Swal.fire({
+        title: "Edit Feedback",
+        html: `
+            <label>Feedback:</label>
+            <textarea id="fbTxt" class="swal2-textarea" style="height:90px;">${feedback}</textarea>
+
+            <label style="margin-top:10px;">Topic:</label>
+            <input id="fbTopic" class="swal2-input" value="${topic}">
+
+            <label style="margin-top:10px;">Mood:</label>
+            <input id="fbMood" class="swal2-input" value="${mood}">
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Save"
+    });
+
+    if (!save) return;
+
+    const updatedFeedback = document.getElementById("fbTxt").value;
+    const updatedTopic = document.getElementById("fbTopic").value;
+    const updatedMood = document.getElementById("fbMood").value;
+
+    const resp = await fetch("/admin/update_feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id: id,
+            feedback: updatedFeedback,
+            topic: updatedTopic,
+            mood: updatedMood
+        })
+    });
+
+    const data = await resp.json();
+
+    if (data.success) {
+        Swal.fire("Updated!", "Feedback updated!", "success");
+
+        const tr = document.querySelector(`tr[data-id='${id}']`);
+        tr.children[3].innerHTML = `<span class='badge badge-topic'>${updatedTopic}</span>`;
+        tr.children[4].innerHTML = `<span class='badge badge-mood'>${updatedMood}</span>`;
+        tr.children[5].innerHTML = `<span class='badge badge-feedback'>${updatedFeedback}</span>`;
+    }
+}
+
+
+/* DELETE */
+async function deleteFeedback(id, btn){
+    const ok = await Swal.fire({
+        title:"Delete Feedback?",
+        icon:"warning",
+        showCancelButton:true,
+        confirmButtonText:"Delete"
+    });
+
+    if (!ok.isConfirmed) return;
+
+    const resp = await fetch(`/admin/delete_feedback?id=${id}`, { method: "DELETE" });
+
+    const data = await resp.json();
+
+    if(data.success){
+        Swal.fire("Deleted", "Feedback removed!", "success");
+        btn.closest("tr").remove();
+    }
+}
+
+</script>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -6,6 +6,7 @@
 <title>Learnify.AI – Smart Tech Recommendations</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 
 <style>
   :root{
@@ -37,6 +38,33 @@
     height: 60px;
     margin-bottom: 12px;
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+}
+.admin-float-btn {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    z-index: 9999;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.admin-float-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    background: rgba(0, 180, 216, 0.35);
+    box-shadow: 0 8px 28px rgba(0, 180, 216, 0.55);
+    border-color: rgba(0, 180, 216, 0.6);
 }
 
 .trend-card {
@@ -215,14 +243,28 @@
   opacity: 1;
   transform: translateY(0);
 }
+.brand-link {
+    text-decoration: none;
+    color: #90e0ef;
+    font-size: 24px;
+    font-weight: 700;
+}
+.brand-link:hover {
+    color: #00b4d8;
+}
 
 </style>
 </head>
 <body>
+{% if session.get('is_admin') %}
+<a href="/admin" class="admin-float-btn">
+    <i class="fa-solid fa-gauge-high"></i> Admin Overview
+</a>
+{% endif %}
 
 <!-- NAVBAR -->
 <nav class="navbar">
-  <div class="brand">Learnify.AI</div>
+  <a href="/" class="brand brand-link">Learnify.AI</a>
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
     <li><a href="/dashboard">Dashboard</a></li>
@@ -236,6 +278,7 @@
     {% endif %}
   </ul>
 </nav>
+
 
 <!-- CONTAINER -->
 <div class="container">
@@ -400,7 +443,7 @@
   </div>
 </section>
 
-    
+
 
 <style>
 .trend-card {
@@ -426,62 +469,60 @@
 </style>
 
 
-  <!-- Recommended Learning Paths -->
+ <!-- Recommended Learning Paths -->
 <section class="section fade-up reveal">
   <h2>Recommended Learning Paths</h2>
 
   <div class="paths-grid">
 
     <!-- Python Developer → ML -->
-    <div class="path-card glow-box lift">
+    <div class="path-card">
       <img src="{{ url_for('static', filename='images/paths/python_ml.png') }}" 
-           alt="Python ML Path" 
-           style="width:100%; border-radius:10px; margin-bottom:12px;">
+           style="width:100%; border-radius:14px; margin-bottom:12px;">
       <h4>Python Developer → ML</h4>
-      <p>Python basics → Data handling → ML fundamentals → Project</p>
+      <p>Python → Data → ML → Projects</p>
       <div style="margin-top:12px;">
-        <a class="cat-cta" onclick="submitCat('Python to ML')">Start Path</a>
+        <span class="cat-cta" onclick="openPath('python roadmap')">Start Path</span>
       </div>
     </div>
 
     <!-- AI Practitioner -->
-    <div class="path-card glow-box lift">
+    <div class="path-card">
       <img src="{{ url_for('static', filename='images/paths/ai_practitioner.png') }}" 
-           alt="AI Practitioner Path" 
-           style="width:100%; border-radius:10px; margin-bottom:12px;">
+           style="width:100%; border-radius:14px; margin-bottom:12px;">
       <h4>AI Practitioner</h4>
-      <p>Math foundations → ML → Deep Learning → Deployment</p>
+      <p>Math → ML → Deep Learning → Deployment</p>
       <div style="margin-top:12px;">
-        <a class="cat-cta" onclick="submitCat('AI Practitioner')">Start Path</a>
+        <span class="cat-cta" onclick="openPath('ai roadmap')">Start Path</span>
       </div>
     </div>
 
     <!-- Cloud DevOps -->
-    <div class="path-card glow-box lift">
+    <div class="path-card">
       <img src="{{ url_for('static', filename='images/paths/cloud_devops.png') }}" 
-           alt="Cloud DevOps Path" 
-           style="width:100%; border-radius:10px; margin-bottom:12px;">
+           style="width:100%; border-radius:14px; margin-bottom:12px;">
       <h4>Cloud & DevOps</h4>
-      <p>Linux → Docker → Kubernetes → AWS/Azure basics</p>
+      <p>Linux → Docker → Kubernetes → AWS</p>
       <div style="margin-top:12px;">
-        <a class="cat-cta" onclick="submitCat('Cloud DevOps')">Start Path</a>
+        <span class="cat-cta" onclick="openPath('cloud roadmap')">Start Path</span>
       </div>
     </div>
 
     <!-- Data Science Track -->
-    <div class="path-card glow-box lift">
+    <div class="path-card">
       <img src="{{ url_for('static', filename='images/paths/data_science.png') }}" 
-           alt="Data Science Path" 
-           style="width:100%; border-radius:10px; margin-bottom:12px;">
+           style="width:100%; border-radius:14px; margin-bottom:12px;">
       <h4>Data Science Track</h4>
-      <p>Python → Pandas → Visualization → Kaggle projects</p>
+      <p>Pandas → Viz → ML → Kaggle</p>
       <div style="margin-top:12px;">
-        <a class="cat-cta" onclick="submitCat('Data Science Track')">Start Path</a>
+        <span class="cat-cta" onclick="openPath('data science roadmap')">Start Path</span>
       </div>
     </div>
 
   </div>
 </section>
+
+    
 
 
   <!-- Why Choose -->
@@ -600,11 +641,9 @@
     }
   });
 
-  // Prevent anchor default if they have onclick submitCat (makes clickable on small devices)
-  document.querySelectorAll('a[onclick]').forEach(a=>{
-    a.addEventListener('click', (ev)=> ev.preventDefault());
-  });
+  // ⚠️ NOTE: Blocking anchor-default script removed completely.
 </script>
+
 <script>
   function revealOnScroll() {
     const reveals = document.querySelectorAll(".reveal");
@@ -619,6 +658,23 @@
 
   window.addEventListener("scroll", revealOnScroll);
   revealOnScroll();
+</script>
+
+<script>
+function openPath(topic) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/recommend';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'user_input';
+    input.value = topic;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+}
 </script>
 
 </body>

@@ -1,418 +1,419 @@
-# app.py
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
-from textblob import TextBlob
-import requests, sqlite3, os, datetime
-from werkzeug.utils import secure_filename
+# ==========================================================
+#  LEARNIFY.AI — FULL PRO VERSION (XP + Achievements + Charts)
+# ==========================================================
 
+from flask import (
+    Flask, render_template, request, redirect, url_for,
+    session, flash, jsonify, abort, send_from_directory
+)
+from textblob import TextBlob
+import requests, sqlite3, os, datetime, json
+from werkzeug.utils import secure_filename
+from functools import wraps
+
+# ----------------------------------------------------------
+# CONFIG
+# ----------------------------------------------------------
 app = Flask(__name__)
 app.secret_key = "learnify_secret_key"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "learnify.db")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "avatars")
-ALLOWED_EXT = {"png", "jpg", "jpeg", "gif"}
+ALLOWED_EXT = {"jpg", "jpeg", "png", "gif"}
 YOUTUBE_API_KEY = "AIzaSyC-G8AaOVXnPKtrT4mM4ND1CMA4whCLELo"
 
-# ensure upload folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-# -------------------- DB INIT + MIGRATE --------------------
-def init_db():
-    with sqlite3.connect(DB_PATH) as conn:
-        c = conn.cursor()
-        c.execute('''CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
-        )''')
-
-        c.execute('''CREATE TABLE IF NOT EXISTS feedback (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_query TEXT,
-            topic TEXT,
-            mood TEXT,
-            sentiment REAL,
-            feedback TEXT
-        )''')
-        conn.commit()
-
-        # add username, created_at columns if missing
-        c.execute("PRAGMA table_info(feedback)")
-        columns = [r[1] for r in c.fetchall()]
-        if "username" not in columns:
-            try:
-                c.execute("ALTER TABLE feedback ADD COLUMN username TEXT")
-            except Exception:
-                pass
-        if "created_at" not in columns:
-            try:
-                c.execute("ALTER TABLE feedback ADD COLUMN created_at TEXT")
-            except Exception:
-                pass
-        conn.commit()
-
-init_db()
-
-# -------------------- UTIL --------------------
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
 
-# -------------------- YOUTUBE FETCH --------------------
-def fetch_youtube_videos(query):
-    try:
-        q = requests.utils.requote_uri(query)
-        url = f"https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&q={q}&type=video&key={YOUTUBE_API_KEY}"
-        resp = requests.get(url, timeout=6)
-        data = resp.json()
-        items = data.get("items", [])
-        videos = []
-        for item in items:
-            snippet = item.get("snippet", {})
-            vidid = item.get("id", {}).get("videoId", "")
-            thumb = snippet.get("thumbnails", {}).get("medium", {}).get("url", "")
-            videos.append({
-                "title": snippet.get("title", "Untitled"),
-                "thumbnail": thumb or "https://via.placeholder.com/320x180",
-                "url": f"https://www.youtube.com/watch?v={vidid}" if vidid else "#"
-            })
-        return videos
-    except Exception:
-        return []
+# ==========================================================
+# AI HELPERS (AUTO LEVEL, CATEGORY, INTENT)
+# ==========================================================
+def auto_detect_level(text):
+    t = text.lower()
+    if any(k in t for k in ["basic", "intro", "fundamental", "beginner"]):
+        return "Basics"
+    if any(k in t for k in ["intermediate", "mid"]):
+        return "Intermediate"
+    if any(k in t for k in ["project", "hands-on", "build"]):
+        return "Projects"
+    if any(k in t for k in ["advanced", "expert", "deep"]):
+        return "Advanced"
+    return "Beginner"
 
-# -------------------- RESOURCES --------------------
-def get_online_resources(topic):
-    topic = (topic or "programming").lower()
-    resources = {
-        "programming": [
-            {"title":"W3Schools","url":"https://www.w3schools.com","description":"Beginner-friendly programming tutorials."},
-            {"title":"GeeksForGeeks","url":"https://www.geeksforgeeks.org","description":"Articles, problems and explanations."},
-            {"title":"FreeCodeCamp","url":"https://www.freecodecamp.org","description":"Project-based learning."},
-            {"title":"MDN Web Docs","url":"https://developer.mozilla.org","description":"Official web docs."},
-            {"title":"Coursera","url":"https://www.coursera.org","description":"University courses."},
-            {"title":"Udemy","url":"https://www.udemy.com","description":"Paid & free courses."}
-        ],
-        "ai": [
-            {"title":"OpenAI Docs","url":"https://platform.openai.com/docs","description":"API & modern AI docs."},
-            {"title":"Google AI","url":"https://ai.google/education/","description":"Google AI resources."},
-            {"title":"MIT OCW - AI","url":"https://ocw.mit.edu","description":"MIT course materials."},
-            {"title":"Fast.ai","url":"https://www.fast.ai","description":"Practical deep learning."},
-            {"title":"IBM AI","url":"https://www.ibm.com/training","description":"Enterprise AI training."},
-            {"title":"Simplilearn AI","url":"https://www.simplilearn.com/artificial-intelligence-basics-article","description":"Beginner guides."}
-        ],
-        "ml": [
-            {"title":"Kaggle Learn","url":"https://www.kaggle.com/learn","description":"Hands-on ML mini-courses."},
-            {"title":"Andrew Ng ML","url":"https://www.coursera.org/learn/machine-learning","description":"Classic ML course."},
-            {"title":"Scikit-Learn","url":"https://scikit-learn.org","description":"ML algorithms & examples."},
-            {"title":"TensorFlow","url":"https://www.tensorflow.org/learn","description":"TF tutorials."},
-            {"title":"Fast.ai","url":"https://www.fast.ai","description":"Deep learning for coders."},
-            {"title":"TutorialsPoint ML","url":"https://www.tutorialspoint.com/machine_learning/index.htm","description":"Practical guides."}
-        ],
-        "cloud": [
-            {"title":"AWS Training","url":"https://aws.amazon.com/training/","description":"AWS official training."},
-            {"title":"Azure Learn","url":"https://learn.microsoft.com/en-us/azure/","description":"Microsoft Azure docs."},
-            {"title":"Google Cloud","url":"https://cloud.google.com/learn","description":"Google Cloud training."},
-            {"title":"Kubernetes","url":"https://kubernetes.io/docs/","description":"Orchestration docs."},
-            {"title":"Cloud Academy","url":"https://cloudacademy.com","description":"Hands-on labs."},
-            {"title":"IBM Cloud","url":"https://www.ibm.com/training/cloud","description":"Cloud courses."}
-        ],
-        "data science": [
-            {"title":"Kaggle","url":"https://www.kaggle.com/learn","description":"Data science learning."},
-            {"title":"DataCamp","url":"https://www.datacamp.com","description":"Interactive DS learning."},
-            {"title":"Coursera DS","url":"https://www.coursera.org/specializations/data-science","description":"Specializations."},
-            {"title":"Harvard DS","url":"https://online-learning.harvard.edu/subject/data-science","description":"Harvard material."},
-            {"title":"Analytics Vidhya","url":"https://www.analyticsvidhya.com","description":"Practical articles."},
-            {"title":"Towards Data Science","url":"https://towardsdatascience.com","description":"Blogs & guides."}
-        ]
-    }
-    return resources.get(topic, resources["programming"])
+def auto_detect_category(text):
+    t = text.lower()
+    if any(k in t for k in ["ai", "machine learning"]): return "AI"
+    if "python" in t: return "Python"
+    if any(k in t for k in ["html","css","javascript","react"]): return "Web"
+    if "cloud" in t or "aws" in t: return "Cloud"
+    if any(k in t for k in ["dsa", "algorithm"]): return "DSA"
+    return "Programming"
 
-# -------------------- AUTH --------------------
+def auto_detect_platform(text):
+    t = text.lower()
+    if "udemy" in t: return "Udemy"
+    if "coursera" in t: return "Coursera"
+    if "google" in t: return "Google"
+    if "youtube" in t or "youtu" in t: return "YouTube"
+    return "Unknown"
+
+def analyze_query(text):
+    t = text.lower()
+    intent = "learn"
+    if "project" in t: intent = "projects"
+    elif "roadmap" in t: intent = "roadmap"
+    elif "course" in t: intent = "course"
+
+    level = "Beginner"
+    if "intermediate" in t: level = "Intermediate"
+    if "advanced" in t: level = "Advanced"
+
+    topic = t.split()[-1] if len(t) else "programming"
+    return {"topic": topic, "intent": intent, "level": level}
+
+def compute_score(title, desc, user_level, user_intent):
+    text = (title + " " + desc).lower()
+    score = 0
+
+    # Intent score
+    if user_intent == "projects" and "project" in text: score += 30
+    if user_intent == "course" and "course" in text: score += 20
+
+    # Level score
+    if user_level == "Beginner" and "beginner" in text: score += 20
+    if user_level == "Intermediate" and "intermediate" in text: score += 20
+    if user_level == "Advanced" and "advanced" in text: score += 20
+
+    return score + min(len(text.split()), 20)
+
+# ==========================================================
+# DATABASE
+# ==========================================================
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_db()
+    c = conn.cursor()
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        email TEXT UNIQUE,
+        password TEXT,
+        created_at TEXT
+    )""")
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS feedback(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_query TEXT,
+        topic TEXT,
+        mood TEXT,
+        sentiment REAL,
+        feedback TEXT,
+        username TEXT,
+        created_at TEXT
+    )""")
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS roadmap_progress(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        topic TEXT,
+        completed_json TEXT,
+        xp INTEGER,
+        updated_at TEXT
+    )""")
+
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# ==========================================================
+# AUTH
+# ==========================================================
 @app.route("/signup", methods=["GET","POST"])
 def signup():
     if request.method == "POST":
-        username = request.form["username"].strip()
-        email = request.form["email"].strip().lower()
-        password = request.form["password"].strip()
-        with sqlite3.connect(DB_PATH) as conn:
-            c = conn.cursor()
-            try:
-                c.execute("INSERT INTO users (username,email,password) VALUES (?,?,?)", (username,email,password))
-                conn.commit()
-                flash("Account created successfully!","success")
-                return redirect(url_for("login"))
-            except sqlite3.IntegrityError:
-                flash("Username or Email already exists!","error")
-                return redirect(url_for("signup"))
+        u = request.form["username"].strip()
+        e = request.form["email"].strip()
+        p = request.form["password"].strip()
+        now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+        try:
+            db = get_db()
+            db.execute("INSERT INTO users(username,email,password,created_at) VALUES(?,?,?,?)",
+                       (u,e,p,now))
+            db.commit()
+            flash("Account Created!", "success")
+            return redirect("/login")
+        except:
+            flash("Username or Email already exists!", "error")
+            return redirect("/signup")
+
     return render_template("signup.html")
 
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"].strip()
-        password = request.form["password"].strip()
-        with sqlite3.connect(DB_PATH) as conn:
-            c = conn.cursor()
-            c.execute("SELECT * FROM users WHERE username=? AND password=?", (username,password))
-            user = c.fetchone()
+        u = request.form["username"]
+        p = request.form["password"]
+
+        db = get_db()
+        user = db.execute("SELECT * FROM users WHERE username=? AND password=?", (u,p)).fetchone()
+
         if user:
-            session["user"] = username
-            return redirect(url_for("dashboard"))
-        else:
-            flash("Invalid username/password","error")
-            return redirect(url_for("login"))
+            session["user"] = u
+            return redirect("/")
+        return render_template("login.html", error="Invalid credentials")
+
     return render_template("login.html")
 
 @app.route("/logout")
 def logout():
-    session.pop("user", None)
-    return redirect(url_for("home"))
+    session.clear()
+    return redirect("/")
 
-# -------------------- HOME --------------------
+# ==========================================================
+# HOME
+# ==========================================================
 @app.route("/")
 def home():
     return render_template("index.html")
 
-# -------------------- RECOMMEND --------------------
+# ==========================================================
+# YOUTUBE API
+# ==========================================================
+def fetch_youtube_videos(q):
+    try:
+        url = (
+            "https://www.googleapis.com/youtube/v3/search?"
+            f"part=snippet&maxResults=6&q={q}&type=video&key={YOUTUBE_API_KEY}"
+        )
+        res = requests.get(url).json()
+
+        videos = []
+        for v in res.get("items", []):
+            vid = v["id"].get("videoId")
+            title = v["snippet"].get("title")
+            thumb = v["snippet"]["thumbnails"]["medium"]["url"]
+
+            videos.append({
+                "title": title,
+                "thumbnail": thumb,
+                "url": f"https://www.youtube.com/watch?v={vid}",
+                "level": auto_detect_level(title),
+                "category": auto_detect_category(title),
+                "platform": "YouTube"
+            })
+        return videos
+    except:
+        return []
+
+# ==========================================================
+# ONLINE RESOURCES (STATIC)
+# ==========================================================
+def get_online_resources(topic):
+    topic = topic.lower()
+    data = {
+        "python": [
+            {"title":"Python Basics - W3Schools","url":"https://w3schools.com","description":"Learn Python basics"},
+            {"title":"Python Projects","url":"https://freecodecamp.org","description":"Hands-on Python projects"},
+        ],
+        "ai": [
+            {"title":"Google AI","url":"https://ai.google","description":"AI basics & ML training"},
+            {"title":"DeepLearning.AI","url":"https://deeplearning.ai","description":"Neural network courses"},
+        ],
+        "programming": [
+            {"title":"GeeksForGeeks","url":"https://geeksforgeeks.org","description":"Programming & DSA"},
+            {"title":"FreeCodeCamp","url":"https://freecodecamp.org","description":"Full stack + projects"},
+        ]
+    }
+    R = data.get(topic, data["programming"])
+
+    for r in R:
+        txt = r["title"] + " " + r["description"]
+        r["level"] = auto_detect_level(txt)
+        r["category"] = auto_detect_category(txt)
+        r["platform"] = auto_detect_platform(txt)
+    return R
+
+# ==========================================================
+# RECOMMENDATION ENGINE
+# ==========================================================
 @app.route("/recommend", methods=["POST"])
 def recommend():
-    user_input = request.form.get("user_input", "")
-    sentiment = TextBlob(user_input).sentiment.polarity
-    sentiment_clean = float(f"{sentiment:.2f}") if sentiment is not None else 0.0
+    user_input = request.form["user_input"]
+    sentiment = float(f"{TextBlob(user_input).sentiment.polarity:.2f}")
 
-    if sentiment_clean < -0.1:
-        mood = "confused"
-    elif sentiment_clean < 0.3:
-        mood = "neutral"
-    else:
-        mood = "excited"
+    if sentiment < -0.1: mood = "confused"
+    elif sentiment < 0.3: mood = "neutral"
+    else: mood = "excited"
 
-    topic = "general"
-    for key in ["ai", "ml", "python", "cloud", "programming", "data science"]:
-        if key in user_input.lower():
-            topic = key
-            break
+    analysis = analyze_query(user_input)
+    topic = analysis["topic"]
 
-    videos = fetch_youtube_videos(user_input + " tutorial")
-    online_resources = get_online_resources(topic)
+    online = get_online_resources(topic)
+    videos = fetch_youtube_videos(topic + " tutorial")
 
-    # ensure keys exist
+    # AI Scoring
+    for r in online:
+        r["score"] = compute_score(r["title"], r["description"], analysis["level"], analysis["intent"])
     for v in videos:
-        v.setdefault("title","No title")
-        v.setdefault("thumbnail","https://via.placeholder.com/320x180")
-        v.setdefault("url","#")
-    for r in online_resources:
-        r.setdefault("title","Untitled")
-        r.setdefault("description","No description")
-        r.setdefault("url","#")
+        v["score"] = compute_score(v["title"], v["title"], analysis["level"], analysis["intent"])
 
-    username = session.get("user")
-    created_at = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    online = sorted(online, key=lambda x: x["score"], reverse=True)
+    videos = sorted(videos, key=lambda x: x["score"], reverse=True)
 
-    with sqlite3.connect(DB_PATH) as conn:
-        c = conn.cursor()
-        try:
-            c.execute("INSERT INTO feedback (user_query, topic, mood, sentiment, username, created_at) VALUES (?,?,?,?,?,?)",
-                      (user_input, topic, mood, sentiment_clean, username, created_at))
-        except sqlite3.OperationalError:
-            c.execute("INSERT INTO feedback (user_query, topic, mood, sentiment) VALUES (?,?,?,?)",
-                      (user_input, topic, mood, sentiment_clean))
-        conn.commit()
+    # Save feedback log
+    if "user" in session:
+        db = get_db()
+        db.execute("""
+        INSERT INTO feedback(user_query, topic, mood, sentiment, username, created_at)
+        VALUES(?,?,?,?,?,?)
+        """, (user_input, topic, mood, sentiment, session["user"],
+              datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")))
+        db.commit()
 
     return render_template("recommend.html",
-                           query=user_input,
-                           mood=mood,
-                           sentiment=sentiment_clean,
-                           topic=topic.title(),
-                           videos=videos,
-                           online_resources=online_resources)
+                           query=user_input, topic=topic.title(),
+                           mood=mood, sentiment=sentiment,
+                           online_resources=online,
+                           videos=videos)
 
-# -------------------- SUBMIT FEEDBACK --------------------
-@app.route("/submit_feedback", methods=["POST"])
-def submit_feedback():
-    user_query = request.form.get("query")
-    rating = request.form.get("rating", "0")
-    feedback_text = request.form.get("feedback_text", "")
-    username = session.get("user")
-    full_feedback = f"{rating} Stars - {feedback_text}"
-
-    with sqlite3.connect(DB_PATH) as conn:
-        c = conn.cursor()
-        if username:
-            c.execute("""SELECT id FROM feedback WHERE username = ? AND user_query = ? ORDER BY id DESC LIMIT 1""", (username, user_query))
-        else:
-            c.execute("""SELECT id FROM feedback WHERE user_query = ? ORDER BY id DESC LIMIT 1""", (user_query,))
-        row = c.fetchone()
-        if row:
-            last_id = row[0]
-            c.execute("UPDATE feedback SET feedback = ? WHERE id = ?", (full_feedback, last_id))
-        conn.commit()
-
-    return render_template("thankyou.html", rating=rating, feedback_text=feedback_text)
-
-# -------------------- AVATAR UPLOAD --------------------
-@app.route("/upload_avatar", methods=["POST"])
-def upload_avatar():
-    if "user" not in session:
-        flash("Login required to upload avatar.")
-        return redirect(url_for("login"))
-
-    if "avatar" not in request.files:
-        flash("No file part.")
-        return redirect(url_for("dashboard"))
-
-    file = request.files["avatar"]
-    if file.filename == "":
-        flash("No selected file.")
-        return redirect(url_for("dashboard"))
-
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        # store as username.ext
-        ext = filename.rsplit(".", 1)[1].lower()
-        username = session["user"]
-        save_name = f"{secure_filename(username)}.{ext}"
-        save_path = os.path.join(UPLOAD_FOLDER, save_name)
-        file.save(save_path)
-        flash("Avatar uploaded.", "success")
-        return redirect(url_for("dashboard"))
-    else:
-        flash("Invalid file type. Allowed: png,jpg,jpeg,gif")
-        return redirect(url_for("dashboard"))
-
-# serve avatar (not necessary, static will serve, but keep convenience)
-@app.route("/avatars/<filename>")
-def avatars(filename):
-    return send_from_directory(UPLOAD_FOLDER, filename)
-
-# -------------------- DASHBOARD --------------------
+# ==========================================================
+# DASHBOARD
+# ==========================================================
 @app.route("/dashboard")
 def dashboard():
     if "user" not in session:
-        flash("Login required!")
-        return redirect(url_for("login"))
+        return redirect("/login")
 
     username = session["user"]
+    db = get_db()
+    rows = db.execute("""
+        SELECT * FROM feedback WHERE username=?
+        ORDER BY datetime(created_at) DESC
+    """, (username,)).fetchall()
 
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
+    # ------------------------
+    # EMPTY USER → SAFE PAGE
+    # ------------------------
+    if not rows:
+        return render_template("dashboard.html",
+            user=username,
+            history=[],
+            insights={"top_topic":"None","top_mood":"None","avg_sentiment":0},
+            topic_data={}, mood_data={}, sentiment_data=[],
+            weekly_activity=[], achievements=[], avatar_url=None
+        )
 
-        # fetch user-specific history (latest first)
-        c.execute("""SELECT user_query, topic, mood, sentiment, feedback, username, created_at
-                     FROM feedback WHERE username = ? ORDER BY datetime(created_at) DESC""", (username,))
-        history_rows = c.fetchall()
+    # ------------------------
+    # PREPARE DICTS
+    # ------------------------
+    topic_data = {}
+    mood_data = {}
+    sentiment_list = []
 
-        # counts
-        c.execute("SELECT topic, COUNT(*) FROM feedback WHERE username = ? GROUP BY topic", (username,))
-        topic_counts = dict(c.fetchall())
+    for r in rows:
+        t = r["topic"] or "Unknown"
+        m = r["mood"] or "Neutral"
+        s = float(r["sentiment"])
 
-        c.execute("SELECT mood, COUNT(*) FROM feedback WHERE username = ? GROUP BY mood", (username,))
-        mood_counts = dict(c.fetchall())
+        topic_data[t] = topic_data.get(t, 0) + 1
+        mood_data[m] = mood_data.get(m, 0) + 1
+        sentiment_list.append(s)
 
-        # weekly activity last 7 days
-        c.execute("""SELECT date(created_at) as d, COUNT(*) as cnt
-                     FROM feedback
-                     WHERE username = ? AND date(created_at) >= date('now','-6 days')
-                     GROUP BY date(created_at)
-                     ORDER BY date(created_at) ASC""", (username,))
-        weekly = dict(c.fetchall())
-
-    # clean
-    topic_data = { str(k or "Unknown"): int(v or 0) for k, v in topic_counts.items() }
-    mood_data  = { str(k or "Unknown"): int(v or 0) for k, v in mood_counts.items() }
-
-    # weekly list (7 days)
-    weekly_activity = []
-    for i in range(6, -1, -1):
-        d = (datetime.date.today() - datetime.timedelta(days=i)).isoformat()
-        weekly_activity.append({"day": d[-5:], "count": int(weekly.get(d, 0))})
-
-    # insights
-    top_topic = max(topic_data, key=lambda k: topic_data[k]) if topic_data else "None"
-    top_mood  = max(mood_data, key=lambda k: mood_data[k]) if mood_data else "None"
-    total_recs = sum(topic_data.values())
-    # avg sentiment
-    avg_sentiment = 0.0
-    s_count = 0
-    for r in history_rows:
-        try:
-            if r["sentiment"] is not None:
-                avg_sentiment += float(r["sentiment"])
-                s_count += 1
-        except:
-            pass
-    avg_sentiment = round((avg_sentiment / s_count), 2) if s_count > 0 else 0.0
-
-    suggest_map = {
-        "ai":"Try hands-on AI projects (Fast.ai, Kaggle).",
-        "ml":"Build a small ML project using scikit-learn.",
-        "python":"Practice with mini-projects and data manipulation.",
-        "cloud":"Try a free AWS/Azure quickstart tutorial.",
-        "programming":"Solve coding problems (GFG/LeetCode).",
-        "data science":"Try Kaggle projects and EDA."
-    }
-    suggest_next = suggest_map.get(top_topic.lower(), "Explore high-quality beginner projects.") if isinstance(top_topic, str) else "Explore projects."
-
-    # achievements
-    num_queries = len(history_rows)
-    achievements = []
-    if num_queries >= 1: achievements.append("First Query ✅")
-    if num_queries >= 5: achievements.append("Active Learner 🔥")
-    if num_queries >= 15: achievements.append("Consistent Learner ⭐")
-    if total_recs >= 20: achievements.append("Power User 🏆")
-
-    # prepare history list
-    history = []
-    for r in history_rows:
-        history.append({
-            "user_query": r["user_query"],
-            "topic": r["topic"],
-            "mood": r["mood"],
-            "sentiment": r["sentiment"],
-            "feedback": r["feedback"],
-            "created_at": r["created_at"] or ""
-        })
-
+    # ------------------------
+    # INSIGHTS
+    # ------------------------
     insights = {
-        "top_topic": top_topic,
-        "top_mood": top_mood,
-        "avg_sentiment": avg_sentiment,
-        "suggest_next": suggest_next,
-        "recommendation_count": total_recs
+        "top_topic": max(topic_data, key=topic_data.get),
+        "top_mood": max(mood_data, key=mood_data.get),
+        "avg_sentiment": round(sum(sentiment_list) / len(sentiment_list), 2)
     }
 
-    # avatar url if exists
-    avatar_url = None
-    for ext in ["png","jpg","jpeg","gif"]:
-        candidate = os.path.join(UPLOAD_FOLDER, f"{secure_filename(username)}.{ext}")
-        if os.path.exists(candidate):
-            avatar_url = url_for('static', filename=f"avatars/{secure_filename(username)}.{ext}")
+    # ------------------------
+    # WEEKLY ACTIVITY
+    # ------------------------
+    import datetime
+    weekdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+    weekly = {d:0 for d in weekdays}
+
+    for r in rows:
+        dt = datetime.datetime.strptime(r["created_at"], "%Y-%m-%d %H:%M:%S")
+        weekly[weekdays[dt.weekday()]] += 1
+
+    weekly_activity = [{"day": d, "count": weekly[d]} for d in weekdays]
+
+    # ------------------------
+    # ACHIEVEMENTS
+    # ------------------------
+    achievements = []
+    if len(rows) >= 1: achievements.append("First Step")
+    if len(rows) >= 5: achievements.append("Learner Lv.1")
+    if len(rows) >= 15: achievements.append("Explorer Lv.2")
+
+    # ------------------------
+    # AVATAR CHECK ✔️ (Important Fix)
+    # ------------------------
+    avatar_path = None
+    for ext in ["png", "jpg", "jpeg"]:
+        f = f"{username}.{ext}"
+        check_path = os.path.join(UPLOAD_FOLDER, f)
+        if os.path.exists(check_path):
+            avatar_path = f"/avatars/{f}"
             break
 
-    return render_template("dashboard.html",
-                           user=username,
-                           history=history,
-                           topic_data=topic_data,
-                           mood_data=mood_data,
-                           insights=insights,
-                           weekly_activity=weekly_activity,
-                           achievements=achievements,
-                           avatar_url=avatar_url)
+    # ------------------------
+    # RENDER TEMPLATE
+    # ------------------------
+    return render_template(
+        "dashboard.html",
+        user=username,
+        history=rows,
+        insights=insights,
+        topic_data=topic_data,
+        mood_data=mood_data,
+        sentiment_data=sentiment_list,  # ✔️ FIXED
+        weekly_activity=weekly_activity,
+        achievements=achievements,
+    )
+ # ----------------------------------------------------------
+# AVATAR UPLOAD
+# ----------------------------------------------------------
+@app.route("/upload_avatar", methods=["POST"])
+def upload_avatar():
+    if "user" not in session:
+        flash("Login required")
+        return redirect(url_for("login"))
 
-# -------------------- THANKYOU --------------------
-@app.route("/thankyou")
-def thankyou_get():
-    return render_template("thankyou.html")
-@app.route("/recommend", methods=["GET"])
-def recommend_get():
-    return redirect("/")
+    file = request.files.get("avatar")
+    if not file or file.filename.strip() == "":
+        flash("No file selected")
+        return redirect(url_for("dashboard"))
 
-@app.route("/about")
-def about():
-    return render_template("about.html")
+    if not allowed_file(file.filename):
+        flash("Invalid image type")
+        return redirect(url_for("dashboard"))
 
+    ext = file.filename.rsplit(".", 1)[1].lower()
+    filename = f"{secure_filename(session['user'])}.{ext}"
 
-# -------------------- RUN --------------------
+    save_path = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(save_path)
+
+    return redirect(url_for("dashboard"))
+
+# ----------------------------------------------------------
+# RUN
+# ----------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True, port=5050)
