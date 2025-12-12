@@ -22,7 +22,8 @@ app.config.update(
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "learnify.db")
+DB_PATH = ":memory:"
+
 
 # ==========================================================
 # SOCKET.IO (SAFE FALLBACK FOR FREE RENDER PLAN)
@@ -328,4 +329,6 @@ app.register_blueprint(admin_bp, url_prefix="/admin")
 # ==========================================================
 if __name__ == "__main__":
     print("🚀 Learnify.AI Running...")
-    socketio.run(app, debug=True, port=5050)
+    port = int(os.environ.get("PORT", 5050))
+    socketio.run(app, host="0.0.0.0", port=port, debug=False)
+
