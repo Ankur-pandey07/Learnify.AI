@@ -1,5 +1,5 @@
 # ==========================================================
-#  LEARNIFY.AI — FULL STABLE APP (REALTIME ANALYTICS ENABLED)
+#  LEARNIFY.AI — RENDER READY VERSION (FREE PLAN SAFE)
 # ==========================================================
 
 from flask import (
@@ -7,11 +7,10 @@ from flask import (
     session, flash, jsonify, make_response
 )
 from textblob import TextBlob
-import requests, sqlite3, os, datetime, json
-import sys
+import requests, sqlite3, os, datetime, json, sys
 
 # ==========================================================
-# APP INIT (IMPORTANT: FIRST CREATE APP)
+# APP INIT
 # ==========================================================
 app = Flask(__name__)
 app.secret_key = "learnify_secret_key"
@@ -25,18 +24,19 @@ app.config.update(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "learnify.db")
 
-active_users = set()  # live user count
+# ==========================================================
+# SOCKET.IO (SAFE FALLBACK FOR FREE RENDER PLAN)
+# ==========================================================
+from flask_socketio import SocketIO
 
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    async_mode="threading"     # important for free Render
+)
 
 # ==========================================================
-# SOCKET.IO SETUP (AFTER APP CREATED)
-# ==========================================================
-from flask_socketio import SocketIO, emit
-socketio = SocketIO(app, cors_allowed_origins="*")
-
-
-# ==========================================================
-# FIX COOKIE BUG (WERKZEUG PARTITIONED ERROR)
+# FIX COOKIE BUG
 # ==========================================================
 from werkzeug.wrappers import Response as WerkzeugResponse
 _original_set_cookie = WerkzeugResponse.set_cookie
@@ -49,16 +49,17 @@ WerkzeugResponse.set_cookie = patched_set_cookie
 
 
 # ==========================================================
-# DB FUNCTIONS
+# DATABASE
 # ==========================================================
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
+
 def init_db():
     conn = get_db()
-    c = conn.cursor()  # <--- cursor YAHI define hota hai
+    c = conn.cursor()
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS users(
@@ -94,17 +95,25 @@ def init_db():
     )
     """)
 
+    # NEW TABLE FOR SHARING SYSTEM
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS share_links(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        code TEXT,
+        video TEXT,
+        topic TEXT,
+        created_at TEXT
+    )
+    """)
+
     conn.commit()
     conn.close()
 
 
-    
-
 init_db()
 
-
 # ==========================================================
-# MAINTENANCE MODE CHECK
+# MAINTENANCE MODE
 # ==========================================================
 @app.before_request
 def check_maintenance():
@@ -118,23 +127,20 @@ def check_maintenance():
 
 
 # ==========================================================
-# HOME PAGE
+# BASIC ROUTES
 # ==========================================================
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# ==========================================================
-# ABOUT PAGE
-# ==========================================================
 @app.route("/about")
 def about():
     return render_template("about.html", now=datetime.datetime.utcnow())
 
 
 # ==========================================================
-# USER SIGNUP
+# SIGNUP
 # ==========================================================
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -152,7 +158,6 @@ def signup():
             """, (u, e, p, now))
             db.commit()
             return redirect("/login")
-
         except:
             return render_template("signup.html", error="Username or Email already exists!")
 
@@ -160,7 +165,7 @@ def signup():
 
 
 # ==========================================================
-# USER LOGIN (CLEAN VERSION)
+# LOGIN
 # ==========================================================
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -169,10 +174,7 @@ def login():
         p = request.form["password"].strip()
 
         db = get_db()
-        user = db.execute(
-            "SELECT * FROM users WHERE username=? AND password=?",
-            (u, p)
-        ).fetchone()
+        user = db.execute("SELECT * FROM users WHERE username=? AND password=?", (u, p)).fetchone()
 
         if not user:
             return render_template("login.html", error="Invalid username or password.")
@@ -206,20 +208,15 @@ def fetch_youtube_videos(q):
             "https://www.googleapis.com/youtube/v3/search?"
             f"part=snippet&maxResults=6&q={q}&type=video&key=AIzaSyC-G8AaOVXnPKtrT4mM4ND1CMA4whCLELo"
         )
-
         res = requests.get(url).json()
         videos = []
 
         for v in res.get("items", []):
-            vid = v["id"].get("videoId")
+            vid = v["id"]["videoId"]
             title = v["snippet"]["title"]
             thumb = v["snippet"]["thumbnails"]["medium"]["url"]
 
-            videos.append({
-                "title": title,
-                "thumbnail": thumb,
-                "url": f"https://www.youtube.com/watch?v={vid}"
-            })
+            videos.append({"title": title, "thumbnail": thumb, "url": f"https://www.youtube.com/watch?v={vid}"})
 
         return videos
 
@@ -235,12 +232,7 @@ def recommend():
     query = request.form["user_input"]
 
     pol = round(TextBlob(query).sentiment.polarity, 2)
-    if pol >= 0.4:
-        mood = "Excited"
-    elif pol <= -0.2:
-        mood = "Confused"
-    else:
-        mood = "Neutral"
+    mood = "Excited" if pol >= 0.4 else "Confused" if pol <= -0.2 else "Neutral"
 
     now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -262,7 +254,7 @@ def recommend():
         """, (username, query, mood, now))
         db.commit()
 
-        # LIVE ANALYTICS
+        # SAFE REALTIME UPDATE FOR FREE PLAN
         socketio.emit("analytics_update", {
             "total_users": db.execute("SELECT COUNT(*) FROM users").fetchone()[0],
             "total_feedback": db.execute("SELECT COUNT(*) FROM feedback").fetchone()[0]
@@ -272,15 +264,12 @@ def recommend():
 
 
 # ==========================================================
-# ADMIN LOGIN PAGE
+# ADMIN LOGIN
 # ==========================================================
 @app.route("/admin_login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
-        u = request.form["username"]
-        p = request.form["password"]
-
-        if u == "admin" and p == "admin123":
+        if request.form["username"] == "admin" and request.form["password"] == "admin123":
             session["user"] = "admin"
             session["is_admin"] = True
             return redirect("/admin")
@@ -289,18 +278,23 @@ def admin_login():
 
     return render_template("admin_login.html")
 
+
+# ==========================================================
+# SHARE SYSTEM
+# ==========================================================
 @app.route("/generate_share_link", methods=["POST"])
 def generate_share_link():
     data = request.json
     video = data["video"]
     topic = data["topic"]
 
-    # generate unique code
     unique = str(int(datetime.datetime.utcnow().timestamp()))
 
-    link = f"http://127.0.0.1:5050/share/{unique}"
+    # Auto-detect Render hostname
+    host = request.host_url.rstrip("/")
 
-    # store in DB
+    link = f"{host}/share/{unique}"
+
     db = get_db()
     db.execute(
         "INSERT INTO share_links(code, video, topic, created_at) VALUES (?, ?, ?, ?)",
@@ -309,6 +303,7 @@ def generate_share_link():
     db.commit()
 
     return jsonify({"link": link})
+
 
 @app.route("/share/<code>")
 def open_shared_page(code):
@@ -320,16 +315,17 @@ def open_shared_page(code):
 
     return render_template("shared_view.html", video=row["video"], topic=row["topic"])
 
+
 # ==========================================================
-# ADMIN BLUEPRINT REGISTER
+# ADMIN PANEL
 # ==========================================================
 from admin.routes import admin_bp
 app.register_blueprint(admin_bp, url_prefix="/admin")
 
 
 # ==========================================================
-# RUN APP WITH SOCKET.IO
+# RUN APP
 # ==========================================================
 if __name__ == "__main__":
-    print("🚀 Learnify.AI Starting on port 5050...")
+    print("🚀 Learnify.AI Running...")
     socketio.run(app, debug=True, port=5050)
