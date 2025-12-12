@@ -1,0 +1,221 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<style>
+/* GRID LAYOUT */
+.analytics-wrapper {
+    margin-top: 25px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+}
+
+.metric-card {
+    background: rgba(255,255,255,0.06);
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.15);
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,234,255,0.15);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.metric-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 30px rgba(0,234,255,0.35);
+}
+
+.metric-card h1 {
+    margin: 0;
+    font-size: 2.6rem;
+    color: #00eaff;
+}
+
+/* CHART TABS */
+.chart-tabs {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.chart-tab {
+    padding: 10px 18px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.25s;
+}
+
+.chart-tab.active, .chart-tab:hover {
+    border-color: #00eaff;
+    box-shadow: 0 0 15px rgba(0,234,255,0.25);
+}
+
+/* CHART BOX */
+.chart-container {
+    display: none;
+}
+
+.chart-container.active {
+    display: block;
+}
+
+.chart-box {
+    background: rgba(255,255,255,0.05);
+    padding: 22px;
+    border-radius: 18px;
+    margin-top: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+}
+</style>
+
+
+<h2 style="color:#00eaff;">📊 AI Insights Dashboard</h2>
+
+
+<!-- TOP METRIC CARDS -->
+<div class="card-grid">
+
+    <div class="metric-card">
+        <h3>Total Topics</h3>
+        <h1>{{ topic_data|length }}</h1>
+    </div>
+
+    <div class="metric-card">
+        <h3>Most Popular Topic</h3>
+        <h1>
+            {% if topic_data %}
+                {{ (topic_data | dictsort(true) | first)[0] }}
+            {% else %}
+                —
+            {% endif %}
+        </h1>
+    </div>
+
+    <div class="metric-card">
+        <h3>Top Mood</h3>
+        <h1>{{ mood_labels[0] if mood_labels else '—' }}</h1>
+    </div>
+
+    <div class="metric-card">
+        <h3>Days Tracked</h3>
+        <h1>{{ daily_labels|length }}</h1>
+    </div>
+
+</div>
+
+
+<!-- CHART TABS -->
+<div class="chart-tabs">
+    <div class="chart-tab active" onclick="switchTab('topic')">🔥 Topic Popularity</div>
+    <div class="chart-tab" onclick="switchTab('daily')">📈 Daily Usage</div>
+    <div class="chart-tab" onclick="switchTab('mood')">🙂 Mood Stats</div>
+    <div class="chart-tab" onclick="switchTab('radar')">🎯 Sentiment Radar</div>
+</div>
+
+
+<!-- CHART SECTIONS -->
+
+<!-- TOPICS -->
+<div id="chart-topic" class="chart-container active">
+    <div class="chart-box">
+        <canvas id="topicChart"></canvas>
+    </div>
+</div>
+
+<!-- DAILY -->
+<div id="chart-daily" class="chart-container">
+    <div class="chart-box">
+        <canvas id="dailyChart"></canvas>
+    </div>
+</div>
+
+<!-- MOOD -->
+<div id="chart-mood" class="chart-container">
+    <div class="chart-box">
+        <canvas id="moodChart"></canvas>
+    </div>
+</div>
+
+<!-- RADAR -->
+<div id="chart-radar" class="chart-container">
+    <div class="chart-box">
+        <canvas id="radarChart"></canvas>
+    </div>
+</div>
+
+
+<script>
+// SWITCH TABS
+function switchTab(tabName) {
+    document.querySelectorAll(".chart-container").forEach(c => c.classList.remove("active"));
+    document.querySelectorAll(".chart-tab").forEach(t => t.classList.remove("active"));
+
+    document.getElementById("chart-" + tabName).classList.add("active");
+    event.target.classList.add("active");
+}
+
+// TOPIC PIE CHART
+new Chart(document.getElementById("topicChart"), {
+    type: "pie",
+    data: {
+        labels: {{ topic_data.keys()|list }},
+        datasets: [{
+            data: {{ topic_data.values()|list }},
+            backgroundColor: ["#00eaff","#0077b6","#7b2fff","#48cae4","#90e0ef"]
+        }]
+    }
+});
+
+// DAILY USAGE LINE
+new Chart(document.getElementById("dailyChart"), {
+    type: "line",
+    data: {
+        labels: {{ daily_labels|tojson }},
+        datasets: [{
+            data: {{ daily_values|tojson }},
+            borderColor: "#00eaff",
+            borderWidth: 3,
+            fill: false,
+            tension: 0.3
+        }]
+    }
+});
+
+// MOOD BAR
+new Chart(document.getElementById("moodChart"), {
+    type: "bar",
+    data: {
+        labels: {{ mood_labels|tojson }},
+        datasets: [{
+            data: {{ mood_values|tojson }},
+            backgroundColor: "#7b2fff"
+        }]
+    }
+});
+
+// RADAR CHART
+new Chart(document.getElementById("radarChart"), {
+    type: "radar",
+    data: {
+        labels: ["Excited","Neutral","Confused"],
+        datasets: [{
+            data: [70, 50, 20],
+            borderColor: "#00eaff",
+            backgroundColor: "rgba(0,234,255,0.25)"
+        }]
+    }
+});
+</script>
+
+{% endblock %}
+# Prediction: simple trend guess
+future_trend = []
+if len(daily_values) > 2:
+    avg = sum(daily_values[-3:]) / 3
+    future_trend = [avg * 1.1, avg * 1.25, avg * 1.35]  # Next 3 days forecast

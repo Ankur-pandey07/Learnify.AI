@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Search User Results</title>
+
+<style>
+body {
+    background:#0b132b;
+    color:white;
+    font-family:Poppins, sans-serif;
+    padding:40px;
+}
+
+table {
+    width:80%;
+    margin:auto;
+    border-collapse:collapse;
+    background:rgba(255,255,255,0.08);
+    border-radius:12px;
+    overflow:hidden;
+}
+
+th, td {
+    padding:12px;
+    border-bottom:1px solid rgba(255,255,255,0.2);
+}
+
+th {
+    background:rgba(255,255,255,0.15);
+    color:#90e0ef;
+}
+
+tr:hover {
+    background:rgba(255,255,255,0.1);
+}
+
+a {
+    color:#90e0ef;
+}
+
+.box {
+    text-align:center;
+    margin-bottom:20px;
+}
+
+input {
+    padding:10px;
+    border-radius:8px;
+    border:0;
+    width:250px;
+}
+
+button {
+    padding:10px 16px;
+    border:none;
+    border-radius:8px;
+    background:#90e0ef;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>User Search Results</h1>
+
+    <form action="/admin/search_user" method="GET">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search again...">
+        <button>Search</button>
+    </form>
+
+    <p><a href="/admin" style="color:#90e0ef;">⬅ Back to Admin Panel</a></p>
+</div>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Joined</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for u in users %}
+    <tr>
+        <td>{{ u['id'] }}</td>
+        <td>{{ u['username'] }}</td>
+        <td>{{ u['email'] }}</td>
+        <td>{{ u['created_at'] }}</td>
+
+        <td>
+            <a href="/admin/edit_user/{{ u['id'] }}" style="color:#4cd137;">Edit</a> |
+            <a href="/admin/delete_user/{{ u['id'] }}" style="color:#ff6b6b;">Delete</a> |
+            <a href="/admin/ban/{{ u['username'] }}" style="color:#ffd166;">Ban</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if users|length == 0 %}
+    <p style="text-align:center; margin-top:20px;">No users found matching "{{ query }}"</p>
+{% endif %}
+
+</body>
+</html>

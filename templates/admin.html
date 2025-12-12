@@ -2,112 +2,409 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel – Learnify.AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learnify.AI – Admin Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-    body {
-        margin: 0;
-        font-family: "Poppins", sans-serif;
-        background: #0b132b;
-        color: white;
-        padding: 20px;
-    }
-    h1 {
-        color: #90e0ef;
-        text-align: center;
-    }
-    .section-box {
-        background: rgba(255,255,255,0.05);
-        padding: 18px;
-        border-radius: 12px;
-        margin: 25px auto;
-        max-width: 900px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-    }
-    th, td {
-        text-align: left;
-        padding: 10px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    th {
-        color: #ffd700;
-    }
-    a {
-        color: #90e0ef;
-        font-weight: 600;
-        text-decoration: none;
-    }
+
+/* ------------------------------------------------
+   COLOR THEMES
+------------------------------------------------ */
+:root {
+  --bg:#0b1220;
+  --bg2:#101b30;
+  --text:#dff2ff;
+  --glass:rgba(255,255,255,0.06);
+  --glass2:rgba(255,255,255,0.12);
+  --neon1:#00eaff;
+  --neon2:#7b2fff;
+  --shadow:0 0 25px rgba(0,234,255,0.25);
+}
+
+.light {
+  --bg:#f4f7ff;
+  --bg2:#fff;
+  --text:#1d1d1d;
+  --glass:rgba(0,0,0,0.05);
+  --glass2:rgba(0,0,0,0.1);
+  --neon1:#0066ff;
+  --neon2:#9d00ff;
+  --shadow:0 0 18px rgba(0,0,0,0.15);
+}
+
+/* ------------------------------------------------
+   GLOBAL
+------------------------------------------------ */
+body {
+  margin:0;
+  font-family:"Poppins",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  overflow-x:hidden;
+  transition:.3s ease;
+}
+
+/* ------------------------------------------------
+   SIDEBAR
+------------------------------------------------ */
+.sidebar {
+  width: 260px;
+  height:100vh;
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border-right:1px solid var(--glass2);
+  position:fixed;
+  padding:22px;
+  transition:.3s ease;
+  box-shadow:var(--shadow);
+}
+
+.sidebar.collapsed {
+  width:80px;
+}
+
+.brand {
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:25px;
+  transition:.3s;
+}
+
+.brand .logo {
+  width:45px;
+  height:45px;
+  border-radius:12px;
+  font-weight:700;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,var(--neon1),var(--neon2));
+  color:#000;
+}
+
+.brand h2 {
+  margin:0;
+  font-size:1.3rem;
+  color:var(--neon1);
+}
+
+.sidebar.collapsed .brand h2 {
+  display:none;
+}
+
+.nav-link {
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-decoration:none;
+  font-weight:600;
+  border-radius:10px;
+  color:var(--text);
+  margin-bottom:12px;
+  background:var(--glass);
+  border:1px solid transparent;
+  transition:.25s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  border-color:var(--neon1);
+  background:rgba(0,234,255,0.12);
+  box-shadow:var(--shadow);
+}
+
+.sidebar.collapsed .nav-text {
+  display:none;
+}
+
+/* ------------------------------------------------
+   MAIN CONTENT
+------------------------------------------------ */
+.main {
+  margin-left:260px;
+  padding:30px;
+  width:calc(100% - 260px);
+  transition:.3s;
+}
+
+.sidebar.collapsed ~ .main {
+  margin-left:90px;
+  width:calc(100% - 90px);
+}
+
+/* ------------------------------------------------
+   TOP BAR
+------------------------------------------------ */
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px;
+  background:var(--glass);
+  border-radius:16px;
+  backdrop-filter:blur(12px);
+  border:1px solid var(--glass2);
+  box-shadow:var(--shadow);
+}
+
+.topbar h1 {
+  margin:0;
+  font-size:1.8rem;
+}
+
+/* Icons */
+.icon-btn {
+  font-size:22px;
+  cursor:pointer;
+  padding:10px 14px;
+  border-radius:10px;
+  background:var(--glass);
+  border:1px solid var(--glass2);
+  transition:.25s;
+}
+
+.icon-btn:hover {
+  border-color:var(--neon1);
+  box-shadow:var(--shadow);
+}
+
+/* Notification Dropdown */
+.notif-box {
+  position:absolute;
+  right:40px;
+  top:70px;
+  background:var(--glass);
+  border:1px solid var(--glass2);
+  backdrop-filter:blur(12px);
+  padding:15px;
+  width:260px;
+  border-radius:14px;
+  display:none;
+}
+
+/* ------------------------------------------------
+   STAT CARDS
+------------------------------------------------ */
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  margin-top:30px;
+}
+
+.stat-card {
+  background:var(--glass);
+  padding:22px;
+  border-radius:18px;
+  text-align:center;
+  backdrop-filter:blur(14px);
+  box-shadow:var(--shadow);
+  transition:.3s;
+  border:1px solid var(--glass2);
+}
+
+.stat-card:hover {
+  transform:translateY(-8px);
+  box-shadow:0 0 40px var(--neon1);
+}
+
+.stat-card h2 {
+  margin:0;
+  font-size:2.4rem;
+  color:var(--neon1);
+}
+
+/* ------------------------------------------------
+   CHART GRID
+------------------------------------------------ */
+.chart-grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:25px;
+  margin-top:35px;
+}
+
+.chart-box {
+  background:var(--glass);
+  padding:22px;
+  border-radius:18px;
+  backdrop-filter:blur(14px);
+  box-shadow:var(--shadow);
+  border:1px solid var(--glass2);
+}
+
+.chart-box h3 {
+  margin-top:0;
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>🔐 Admin Dashboard</h1>
+<!-- ========== SIDEBAR ========== -->
+<div class="sidebar" id="sidebar">
 
-<div class="section-box">
-    <h2>Total Users</h2>
-    <table>
-        <tr><th>ID</th><th>Username</th><th>Email</th></tr>
+  <div class="brand">
+      <div class="logo">L</div>
+      <h2>Learnify.AI</h2>
+  </div>
 
-        {% for u in users %}
-        <tr>
-            <td>{{ u[0] }}</td>
-            <td>{{ u[1] }}</td>
-            <td>{{ u[2] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+  <a class="nav-link active"><span class="nav-text">📊 Dashboard</span></a>
+  <a href="/admin/users" class="nav-link"><span class="nav-text">👥 Users</span></a>
+  <a href="/admin/feedback" class="nav-link"><span class="nav-text">💬 Feedback</span></a>
+  <a href="/" class="nav-link"><span class="nav-text">🏠 Home</span></a>
+  <a href="/logout" class="nav-link"><span class="nav-text">↪ Logout</span></a>
+
 </div>
 
-<div class="section-box">
-    <h2>All Search Queries</h2>
-    <table>
-        <tr><th>User</th><th>Query</th><th>Topic</th><th>Mood</th></tr>
 
-        {% for f in feedback %}
-        <tr>
-            <td>{{ f[0] }}</td>
-            <td>{{ f[1] }}</td>
-            <td>{{ f[2] }}</td>
-            <td>{{ f[3] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+<!-- ========== MAIN CONTENT ========== -->
+<div class="main">
+
+  <div class="topbar">
+      <h1>⚡ Admin Dashboard</h1>
+
+      <div>
+          <span class="icon-btn" id="toggleSidebar">📁</span>
+          <span class="icon-btn" id="toggleTheme">🌗</span>
+          <span class="icon-btn" id="notifBtn">🔔</span>
+      </div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="notif-box" id="notifBox">
+      <p><b>New Users:</b> {{ total_users }}</p>
+      <p><b>Total Feedback:</b> {{ total_feedback }}</p>
+      <p><b>Unique Topics:</b> {{ topic_data|length }}</p>
+  </div>
+
+  <div class="stats">
+
+    <a href="/admin/users" class="stat-card" style="text-decoration:none; color:inherit;">
+        <h2>{{ total_users }}</h2>
+        <p>Total Users</p>
+    </a>
+
+    <a href="/admin/feedback" class="stat-card" style="text-decoration:none; color:inherit;">
+        <h2>{{ total_feedback }}</h2>
+        <p>Total Recommendations</p>
+    </a>
+
+    <a href="/admin/feedback" class="stat-card" style="text-decoration:none; color:inherit;">
+        <h2>{{ topic_data|length }}</h2>
+        <p>Unique Topics</p>
+    </a>
+
+    <a href="/admin/analytics" class="stat-card" style="text-decoration:none; color:inherit;">
+        <h2>AI</h2>
+        <p>Insights</p>
+    </a>
+
 </div>
 
-<br>
-<div style="text-align:center;">
-    <a href="/logout">Logout Admin</a>
+
+  <!-- Charts -->
+  <div class="chart-grid">
+
+      <div class="chart-box">
+          <h3>🔥 Topic Popularity</h3>
+          <canvas id="topicChart"></canvas>
+      </div>
+
+      <div class="chart-box">
+          <h3>📈 Daily Trends</h3>
+          <canvas id="trendChart"></canvas>
+      </div>
+
+      <div class="chart-box">
+          <h3>🙂 Mood Distribution</h3>
+          <canvas id="moodChart"></canvas>
+      </div>
+
+      <div class="chart-box">
+          <h3>🎯 Sentiment Radar</h3>
+          <canvas id="radarChart"></canvas>
+      </div>
+
+  </div>
+
 </div>
 
-<table border="1" cellpadding="8" cellspacing="0">
-    <tr>
-        <th>User</th>
-        <th>Query</th>
-        <th>Topic</th>
-        <th>Mood</th>
-        <th>Feedback</th>
-        <th>Date</th>
-    </tr>
+<script>
+// ---------- Sidebar Collapse ----------
+document.getElementById("toggleSidebar").onclick = () => {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+  document.querySelector(".main").classList.toggle("collapsed");
+};
 
-    {% for u, q, t, m, f, d in records %}
-    <tr>
-        <td>{{ u }}</td>
-        <td>{{ q }}</td>
-        <td>{{ t }}</td>
-        <td>{{ m }}</td>
-        <td>{{ f }}</td>
-        <td>{{ d }}</td>
-    </tr>
-    {% endfor %}
-</table>
+// ---------- Theme Toggle ----------
+document.getElementById("toggleTheme").onclick = () => {
+  document.body.classList.toggle("light");
+};
+
+// ---------- Notifications ----------
+document.getElementById("notifBtn").onclick = () => {
+  let box = document.getElementById("notifBox");
+  box.style.display = box.style.display === "block" ? "none" : "block";
+};
+
+// ---------- Charts ----------
+new Chart(document.getElementById("topicChart"), {
+  type:"pie",
+  data:{
+    labels: {{ topic_data.keys()|list }},
+    datasets:[{
+      data: {{ topic_data.values()|list }},
+      backgroundColor:["#00eaff","#0096c7","#7b2fff","#48cae4","#90e0ef"]
+    }]
+  }
+});
+
+new Chart(document.getElementById("trendChart"), {
+  type:"line",
+  data:{
+    labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+    datasets:[{
+      label:"Daily Usage",
+      borderColor:"#00eaff",
+      data:[10,20,50,60,40,80,100],
+      tension:.3
+    }]
+  }
+});
+
+new Chart(document.getElementById("moodChart"), {
+  type:"bar",
+  data:{
+    labels:["Happy","Neutral","Confused"],
+    datasets:[{
+      label:"Mood Count",
+      data:[12,4,6],
+      backgroundColor:"#7b2fff"
+    }]
+  }
+});
+
+new Chart(document.getElementById("radarChart"), {
+  type:"radar",
+  data:{
+    labels:["Happy","Neutral","Confused"],
+    datasets:[{
+      label:"Sentiments",
+      data:[60,30,10],
+      backgroundColor:"rgba(0,234,255,0.3)",
+      borderColor:"#00eaff"
+    }]
+  }
+});
+</script>
 
 </body>
 </html>

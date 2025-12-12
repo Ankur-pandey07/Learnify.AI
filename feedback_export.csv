@@ -1,0 +1,243 @@
+id,username,user_query,topic,mood,sentiment,created_at
+1,None,I want to learn about Python.,python,neutral,0.0,None
+2,None,I want to learn about Google Cloud.,cloud,neutral,0.0,None
+3,None,I want to learn about Python.,python,neutral,0.0,None
+4,None,I want to learn about Python.,python,neutral,0.0,None
+5,None,I want to learn about Python.,python,neutral,0.0,None
+6,None,I want to learn about Python.,python,neutral,0.0,None
+7,None,I want to learn about Java.,general,neutral,0.0,None
+8,None,I want to learn about C++.,general,neutral,0.0,None
+9,None,I want to learn about TensorFlow.,general,neutral,0.0,None
+10,None,learn cyber security
+,general,neutral,0.0,None
+11,None,learn aktu math 4
+,general,neutral,0.0,None
+12,None,I want to learn about Azure.,general,neutral,0.0,None
+13,None,I want to learn Discover cloud infrastructure by Google for smart solutions.,cloud,neutral,0.21428571428571427,None
+14,None,I want to learn Microsoft’s cloud platform for developers and enterprises.,cloud,neutral,0.0,None
+15,None,I want to learn Microsoft’s cloud platform for developers and enterprises.,cloud,neutral,0.0,None
+16,None,i want learn cyber security
+,general,neutral,0.0,None
+17,None,theory of automata ,general,neutral,0.0,None
+18,None,computer network
+,general,neutral,0.0,None
+19,None,computer network,general,neutral,0.0,None
+20,None,computer
+,general,neutral,0.0,None
+21,None,ai theory,ai,neutral,0.0,None
+22,None,I want to learn Start your journey with Python — beginner friendly & versatile.,python,excited,0.375,None
+23,None,I want to learn Discover cloud infrastructure by Google for smart solutions.,cloud,neutral,0.21428571428571427,None
+24,None,I want to learn Discover cloud infrastructure by Google for smart scyber security
+olutions.,cloud,neutral,0.21428571428571427,None
+25,None,cyber securty
+,general,neutral,0.0,None
+26,None,java,general,neutral,0.0,None
+27,None,cyber
+,general,neutral,0.0,None
+28,None,I want to learn Learn AWS, Azure, and Google Cloud for scalable app deployment.,cloud,neutral,0.0,None
+29,None,I want to learn Dive into TensorFlow, PyTorch, and Scikit-learn with guided tutorials.,general,neutral,0.0,None
+30,None,I want to learn Learn AWS, Azure, and Google Cloud for scalable app deployment.,cloud,neutral,0.0,None
+31,None,I want to learn Dive into TensorFlow, PyTorch, and Scikit-learn with guided tutorials.,general,neutral,0.0,None
+32,None,,general,neutral,0.0,None
+33,None,programming languages,programming,neutral,0.0,None
+34,None,cloud computing tools,cloud,neutral,0.0,None
+35,None,cybersecurity,general,neutral,0.0,None
+36,None,machine learning frameworks,general,neutral,0.0,None
+37,None,programming languages,programming,neutral,0.0,None
+38,None,programming languages,programming,neutral,0.0,None
+39,None,programming languages,programming,neutral,0.0,None
+40,None,programming languages,programming,neutral,0.0,None
+41,None,programming languages,programming,neutral,0.0,None
+42,None,programming languages,programming,neutral,0.0,None
+43,None,programming languages,programming,neutral,0.0,None
+44,None,programming languages,programming,neutral,0.0,None
+45,None,cybersecurity,general,neutral,0.0,None
+46,None,cloud computing tools,Cloud,neutral,0.0,None
+47,None,cloud computing tools,Cloud,neutral,0.0,None
+48,None,programming languages,Programming,neutral,0.0,None
+49,None,programming languages,Programming,neutral,0.0,None
+50,None,programming languages,Programming,neutral,0.0,None
+51,None,programming languages,Programming,neutral,0.0,None
+52,None,programming languages,Programming,neutral,0.0,None
+53,None,data science,Data Science,neutral,0.0,None
+54,None,data science,Data Science,neutral,0.0,None
+55,None,data science,Data Science,neutral,0.0,None
+56,None,data science,Data Science,neutral,0.0,None
+57,None,data science,Data Science,neutral,0.0,None
+58,None,data science,Data Science,neutral,0.0,None
+59,None,data science,Data Science,neutral,0.0,None
+60,None,data science,Data Science,neutral,0.0,None
+61,None,data science,None,None,None,None
+62,None,cloud computing tools,Cloud,neutral,0.0,None
+63,None,cloud computing tools,None,None,None,None
+64,None,machine learning frameworks,General Learning,neutral,0.0,None
+65,None,machine learning frameworks,None,None,None,None
+66,None,machine learning frameworks,General Learning,neutral,0.0,None
+67,None,machine learning frameworks,General Learning,neutral,0.0,None
+68,None,machine learning frameworks,General Learning,neutral,0.0,None
+69,None,machine learning frameworks,General Learning,neutral,0.0,None
+70,None,machine learning frameworks,General Learning,neutral,0.0,None
+71,None,machine learning frameworks,General,neutral,0.0,None
+72,None,machine learning frameworks,General,neutral,0.0,None
+73,None,machine learning frameworks,General,neutral,0.0,None
+74,None,machine learning frameworks,General,neutral,0.0,None
+75,None,programming languages,programming,neutral,0.0,None
+76,None,machine learning frameworks,general,neutral,0.0,None
+77,None,machine learning frameworks,general,neutral,0.0,None
+78,None,machine learning frameworks,general,neutral,0.0,None
+79,None,programming languages,programming,neutral,0.0,None
+80,None,programming languages,programming,neutral,0.0,None
+81,None,programming languages,programming,neutral,0.0,None
+82,None,programming languages,programming,neutral,0.0,None
+83,None,programming languages,programming,neutral,0.0,None
+84,None,programming languages,programming,neutral,0.0,None
+85,None,programming languages,programming,neutral,0.0,None
+86,None,machine learning frameworks,general,neutral,0.0,None
+87,None,machine learning frameworks,general,neutral,0.0,None
+88,None,machine learning frameworks,general,neutral,0.0,None
+89,None,machine learning frameworks,general,neutral,0.0,None
+90,None,machine learning frameworks,general,neutral,0.0,None
+91,None,machine learning frameworks,general,neutral,0.0,None
+92,None,data science,data science,neutral,0.0,None
+93,None,data science,data science,neutral,0.0,None
+94,None,data science,data science,neutral,0.0,None
+95,None,data science,data science,neutral,0.0,None
+96,None,programming languages,programming,neutral,0.0,None
+97,None,programming languages,programming,neutral,0.0,None
+98,ankurpandey2005,machine learning frameworks,general,neutral,0.0,2025-11-26 13:01:02
+99,ankurpandey2005,machine learning frameworks,general,neutral,0.0,2025-11-26 13:05:07
+100,ankurpandey2005,machine learning frameworks,general,neutral,0.0,2025-11-26 14:51:40
+101,ankurpandey2005,data sceience,general,neutral,0.0,2025-11-26 15:00:32
+102,ankurpandey2005,data sceience,general,neutral,0.0,2025-11-26 15:00:34
+103,ankurpandey2005,data sceience,general,neutral,0.0,2025-11-26 15:04:23
+104,ankurpandey2005,Python,python,neutral,0.0,2025-11-26 15:21:31
+105,ankurpandey2005,Programming,programming,neutral,0.0,2025-11-26 15:57:32
+106,ankurpandey2005,ML,ml,neutral,0.0,2025-11-26 16:13:06
+107,ankurpandey2005,Python,python,neutral,0.0,2025-11-26 16:40:24
+108,ankurpandey2005,AI,ai,neutral,0.0,2025-11-26 16:40:25
+109,ankurpandey2005,ML,ml,neutral,0.0,2025-11-26 16:40:26
+110,ankurpandey2005,AI,ai,neutral,0.0,2025-11-26 16:52:55
+111,ankurpandey2005,Data Science,data science,neutral,0.0,2025-11-26 16:53:09
+112,ankurpandey2005,Machine Learning,general,neutral,0.0,2025-11-26 16:55:31
+113,ankurpandey2005,Python to ML,ml,neutral,0.0,2025-11-26 16:55:42
+114,ankurpandey2005,Python,python,neutral,0.0,2025-11-26 17:01:11
+115,ankurpandey2005,Cybersecurity,general,neutral,0.0,2025-11-26 17:51:42
+116,ankurpandey2005,Data Science Track,data science,neutral,0.0,2025-11-26 18:08:12
+117,ankurpandey2005,Data Science Track,data science,neutral,0.0,2025-11-26 18:18:39
+118,admin,Data Science Track,data science,neutral,0.0,2025-11-29 16:52:53
+119,admin,Python to ML,ml,neutral,0.0,2025-11-29 16:53:03
+120,admin,Artificial Intelligence,general,confused,-0.6,2025-11-29 16:56:13
+121,admin,Machine Learning,general,neutral,0.0,2025-11-29 18:45:29
+122,admin,Python to ML,ml,neutral,0.0,2025-11-30 04:04:36
+123,admin,Artificial Intelligence,general,confused,-0.6,2025-11-30 04:05:29
+124,admin,Artificial Intelligence,general,confused,-0.6,2025-11-30 04:09:54
+125,admin,Python,python,neutral,0.0,2025-11-30 04:10:19
+126,admin,Cloud Computing,cloud,neutral,0.0,2025-11-30 04:10:38
+127,admin,Cloud Computing,cloud,neutral,0.0,2025-11-30 04:12:08
+128,admin,Cloud Computing,cloud,neutral,0.0,2025-11-30 04:13:37
+129,admin,Blockchain,ai,neutral,0.0,2025-11-30 04:31:11
+130,admin,Python to ML,ml,neutral,0.0,2025-11-30 04:31:26
+131,admin,Blockchain,ai,neutral,0.0,2025-11-30 04:32:49
+132,admin,Blockchain,ai,neutral,0.0,2025-11-30 04:32:49
+133,admin,Python to ML,ml,neutral,0.0,2025-11-30 04:53:42
+134,admin,AI Practitioner,ai,neutral,0.0,2025-11-30 04:55:03
+135,None,Python to ML,ml,neutral,0.0,2025-11-30 05:01:02
+136,None,Python to ML,ml,neutral,0.0,2025-11-30 06:50:21
+137,None,Python to ML,ml,neutral,0.0,2025-11-30 06:53:49
+138,None,Python,python,neutral,0.0,2025-11-30 06:54:13
+139,None,Python to ML,ml,neutral,0.0,2025-11-30 06:54:40
+140,None,Python to ML,ml,neutral,0.0,2025-11-30 07:03:29
+141,None,Python to ML,ml,neutral,0.0,2025-11-30 07:07:49
+142,None,Programming,programming,neutral,0.0,2025-11-30 07:24:38
+143,None,Programming,programming,neutral,0.0,2025-11-30 07:26:49
+144,None,Programming,programming,neutral,0.0,2025-11-30 07:44:26
+145,None,DevOps,programming,neutral,0.0,2025-11-30 07:48:10
+146,None,DevOps,devops,neutral,0.0,2025-11-30 07:53:58
+147,ankurpandey2005,Machine Learning,programming,neutral,0.0,2025-11-30 07:54:36
+148,ankurpandey2005,Machine Learning,programming,neutral,0.0,2025-11-30 07:55:04
+149,ankurpandey2005,Python to ML,ml,neutral,0.0,2025-11-30 07:55:15
+150,ankurpandey2005,Artificial Intelligence,programming,confused,-0.6,2025-11-30 07:55:28
+151,ankurpandey2005,Programming,programming,neutral,0.0,2025-11-30 07:55:34
+152,ankurpandey2005,Programming,programming,neutral,0.0,2025-11-30 07:56:53
+153,ankurpandey2005,Machine Learning,programming,neutral,0.0,2025-11-30 07:57:14
+154,ankurpandey2005,Python to ML,ml,neutral,0.0,2025-11-30 07:57:31
+155,ankurpandey2005,Python to ML,ml,neutral,0.0,2025-11-30 08:13:26
+156,ankurpandey2005,Machine Learning,programming,neutral,0.0,2025-11-30 08:13:56
+157,ankurpandey2005,Machine Learning,programming,neutral,0.0,2025-11-30 08:13:56
+158,ankurpandey2005,Artificial Intelligence,programming,confused,-0.6,2025-11-30 08:14:04
+159,ankurpandey2005,Python to ML,ml,neutral,0.0,2025-11-30 08:14:14
+160,ankurpandey2005,data sceience roadmap,programming,neutral,0.0,2025-11-30 08:14:30
+161,ankurpandey2005,Python to ML,ml,neutral,0.0,2025-11-30 08:14:47
+162,ankurpandey2005,Machine Learning,programming,neutral,0.0,2025-11-30 08:26:48
+163,ankurpandey2005,Artificial Intelligence,programming,confused,-0.6,2025-11-30 08:26:57
+164,ankurpandey2005,python roadmap,python,neutral,0.0,2025-11-30 08:27:03
+165,ankurpandey2005,python roadmap,python,neutral,0.0,2025-11-30 08:33:23
+166,ankurpandey2005,Blockchain,ai,neutral,0.0,2025-11-30 08:34:08
+167,None,DevOps,devops,neutral,0.0,2025-11-30 15:28:33
+168,None,Machine Learning,programming,neutral,0.0,2025-11-30 15:28:42
+169,None,DevOps,devops,neutral,0.0,2025-11-30 15:49:27
+170,None,DevOps,devops,neutral,0.0,2025-11-30 16:10:44
+171,None,python roadmap,python,neutral,0.0,2025-11-30 17:07:10
+172,None,python roadmap,python,neutral,0.0,2025-11-30 17:07:10
+173,None,python roadmap,python,neutral,0.0,2025-11-30 17:07:37
+174,None,Artificial Intelligence,programming,confused,-0.6,2025-11-30 17:07:42
+175,None,Python,python,neutral,0.0,2025-11-30 17:07:52
+176,None,Python,python,neutral,0.0,2025-11-30 17:20:42
+177,None,Python roadmap,python,neutral,0.0,2025-11-30 17:21:03
+178,None,ML,ml,neutral,0.0,2025-11-30 17:21:31
+179,None,Cloud,cloud,neutral,0.0,2025-11-30 17:21:41
+180,None,Cloud roadmap,cloud,neutral,0.0,2025-11-30 17:21:55
+181,None,Cloud roadmap,cloud,neutral,0.0,2025-12-01 05:27:48
+182,None,Cloud,cloud,neutral,0.0,2025-12-01 06:03:41
+183,None,Cloud,cloud,neutral,0.0,2025-12-01 06:03:57
+184,None,Cloud,cloud,neutral,0.0,2025-12-01 06:19:37
+185,None,Cloud roadmap,cloud,neutral,0.0,2025-12-01 06:19:47
+186,None,ML,ml,neutral,0.0,2025-12-01 06:20:14
+187,None,Ml roadmap,ml,neutral,0.0,2025-12-01 06:20:23
+188,None,Ml tutorial,ml,neutral,0.0,2025-12-01 06:20:58
+189,None,Ml roadmap,ml,neutral,0.0,2025-12-01 06:21:05
+190,None,ML,ml,neutral,0.0,2025-12-01 06:22:15
+191,None,AI,ai,neutral,0.0,2025-12-01 06:22:16
+192,None,ML,ml,neutral,0.0,2025-12-01 06:22:20
+193,None,ML,ml,neutral,0.0,2025-12-01 06:31:33
+194,None,Ml roadmap,ml,neutral,0.0,2025-12-01 06:31:44
+195,None,Cloud,cloud,neutral,0.0,2025-12-01 06:31:53
+196,None,Cloud for beginners,cloud,neutral,0.0,2025-12-01 06:31:57
+197,None,Cloud basics,cloud,neutral,0.0,2025-12-01 06:32:03
+198,None,Cloud projects,cloud,neutral,0.0,2025-12-01 06:32:06
+199,None,Cloud roadmap,cloud,neutral,0.0,2025-12-01 06:32:10
+200,None,Cloud projects,cloud,neutral,0.0,2025-12-01 06:35:01
+201,None,Cloud projects,cloud,neutral,0.0,2025-12-01 06:38:20
+202,None,Cloud projects,cloud,neutral,0.0,2025-12-01 06:42:53
+203,None,Cloud roadmap,cloud,neutral,0.0,2025-12-01 06:43:08
+204,None,Cloud roadmap,cloud,neutral,0.0,2025-12-01 06:43:15
+205,admin,ML,ml,neutral,0.0,2025-12-01 07:02:20
+206,admin,ML,ml,neutral,0.0,2025-12-01 07:02:26
+207,admin,ML,ml,neutral,0.0,2025-12-01 07:15:32
+208,admin,ML,ml,neutral,0.0,2025-12-01 07:25:09
+209,admin,Ml basics,ml,neutral,0.0,2025-12-01 07:25:23
+210,admin,Ml for beginners,ml,neutral,0.0,2025-12-01 07:25:27
+211,admin,Ml basics,ml,neutral,0.0,2025-12-01 07:25:30
+212,admin,Ml advanced,ml,excited,0.4,2025-12-01 07:25:37
+213,admin,Ml advanced,ml,excited,0.4,2025-12-01 07:32:33
+214,admin,Ml advanced,ml,excited,0.4,2025-12-01 07:34:07
+215,admin,Ml advanced,ml,excited,0.4,2025-12-01 07:34:53
+216,admin,Ml projects,ml,neutral,0.0,2025-12-01 07:34:58
+217,admin,Ml projects,ml,neutral,0.0,2025-12-01 07:50:41
+218,admin,Ml projects,ml,neutral,0.0,2025-12-01 07:51:01
+219,admin,Ml projects,ml,neutral,0.0,2025-12-01 08:02:29
+220,admin,Cloud,cloud,neutral,0.0,2025-12-01 08:02:43
+221,admin,Cloud,cloud,neutral,0.0,2025-12-01 08:06:27
+222,admin,Cloud,cloud,neutral,0.0,2025-12-01 08:09:42
+223,admin,Cloud,cloud,neutral,0.0,2025-12-01 08:17:08
+224,admin,Python,python,neutral,0.0,2025-12-01 08:17:49
+225,admin,Python,python,neutral,0.0,2025-12-01 08:45:43
+226,admin,Data Science,data science,neutral,0.0,2025-12-01 08:46:24
+227,admin,Machine Learning,programming,neutral,0.0,2025-12-01 08:46:32
+228,admin,Machine Learning,programming,neutral,0.0,2025-12-01 09:06:44
+229,admin,Machine Learning,programming,neutral,0.0,2025-12-01 09:20:49
+230,admin,Machine Learning,programming,neutral,0.0,2025-12-01 09:21:26
+231,admin,Machine Learning,programming,neutral,0.0,2025-12-01 10:31:57
+232,admin,Machine Learning,programming,neutral,0.0,2025-12-01 10:46:24
+233,admin,Machine Learning,programming,neutral,0.0,2025-12-01 10:57:28
+234,admin,Artificial Intelligence,programming,confused,-0.6,2025-12-01 10:58:02

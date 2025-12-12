@@ -335,6 +335,69 @@ document.querySelectorAll(".quick-filter").forEach(btn=>{
     });
   });
 });
+<div class="video-card">
+    <img src="{{ v.thumbnail }}" class="thumb">
+
+    <h3>{{ v.title }}</h3>
+
+    <a href="{{ v.url }}" target="_blank" class="watch-btn">Watch</a>
+
+    <!-- 🔥 SHARE BUTTON -->
+    <button class="share-btn" onclick="openSharePopup('{{ v.url }}', '{{ query }}')">
+        🔗 Share
+    </button>
+</div>
+
+</script>
+<!-- SHARE POPUP -->
+<div id="sharePopup" style="
+    display:none; position:fixed; top:50%; left:50%;
+    transform:translate(-50%, -50%);
+    background:white; padding:20px; border-radius:10px;
+    box-shadow:0 0 25px rgba(0,0,0,0.3);
+    z-index:999;
+">
+    <h3>Share Recommendation</h3>
+
+    <input id="shareLink" style="width:100%; padding:8px; margin-top:10px;" readonly>
+
+    <div style="margin-top:10px;">
+        <button onclick="copyLink()">📋 Copy</button>
+        <button onclick="shareWhatsapp()">🟢 WhatsApp</button>
+        <button onclick="closeShare()">❌ Close</button>
+    </div>
+</div>
+<script>
+let currentShareURL = "";
+
+function openSharePopup(videoURL, query) {
+
+    // request public share link from backend
+    fetch("/generate_share_link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ video: videoURL, topic: query })
+    })
+    .then(res => res.json())
+    .then(data => {
+        currentShareURL = data.link;
+        document.getElementById("shareLink").value = data.link;
+        document.getElementById("sharePopup").style.display = "block";
+    });
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(currentShareURL);
+    alert("Link copied!");
+}
+
+function shareWhatsapp() {
+    window.open("https://wa.me/?text=" + encodeURIComponent(currentShareURL));
+}
+
+function closeShare() {
+    document.getElementById("sharePopup").style.display = "none";
+}
 </script>
 
 </body>

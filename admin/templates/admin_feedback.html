@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Feedback – Admin</title>
+<style>
+body{ background:#0b132b; color:white; font-family:Poppins; }
+.sidebar{ width:240px; background:#ffffff08; height:100vh; position:fixed; padding:22px; }
+.main{ margin-left:260px; padding:25px; }
+.table-box{ background:#ffffff08; padding:20px; border-radius:12px; }
+table{ width:100%; border-collapse:collapse; }
+td,th{ padding:10px; border-bottom:1px solid #ffffff20; }
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>⚡ Admin</h2>
+  <ul>
+    <li onclick="window.location='/admin'">📊 Dashboard</li>
+    <li onclick="window.location='/admin/users'">👥 Users</li>
+    <li onclick="window.location='/admin/feedback'">📝 Feedback</li>
+    <li onclick="window.location='/admin/settings'">⚙ Settings</li>
+  </ul>
+</div>
+
+<div class="main">
+  <h1>User Feedback</h1>
+
+  <div class="table-box">
+    <table>
+      <thead>
+        <tr><th>User</th><th>Topic</th><th>Sentiment</th><th>Feedback</th></tr>
+      </thead>
+
+      <tbody>
+        {% for f in feedbacks %}
+        <tr>
+          <td>{{ f.username }}</td>
+          <td>{{ f.topic }}</td>
+          <td>{{ f.sentiment }}</td>
+          <td>{{ f.feedback }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>

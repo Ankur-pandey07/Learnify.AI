@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>{{ title if title else "Admin Dashboard" }} | Learnify.AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<style>
+/* ===================================
+   THEME VARIABLES
+=================================== */
+:root {
+    --bg-dark: #0b0f19;
+    --glass-dark: rgba(255,255,255,0.05);
+    --border-dark: rgba(255,255,255,0.12);
+    --text-dark: #e8f1ff;
+
+    --bg-light: #f4f7ff;
+    --glass-light: rgba(255,255,255,0.6);
+    --border-light: rgba(0,0,0,0.15);
+    --text-light: #1d1d1d;
+
+    --neon1: #00eaff;
+    --neon2: #6a5af9;
+}
+
+/* ===================================
+   GLOBAL
+=================================== */
+body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    display: flex;
+    overflow-x: hidden;
+    transition: 0.3s;
+}
+
+* { box-sizing: border-box; }
+
+/* ===================================
+   SIDEBAR
+=================================== */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    padding: 22px;
+    background: var(--glass-dark);
+    border-right: 1px solid var(--border-dark);
+    backdrop-filter: blur(14px);
+    transition: 0.35s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar.collapsed .brand h2,
+.sidebar.collapsed .admin-info,
+.sidebar.collapsed .nav-text {
+    display: none;
+}
+
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+}
+
+/* ===================================
+   BRAND LOGO
+=================================== */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, var(--neon1), var(--neon2));
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    color: #000;
+    box-shadow: 0 0 15px var(--neon1);
+}
+
+/* ===================================
+   AVATAR MENU
+=================================== */
+.admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.admin-profile:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid var(--neon1);
+    box-shadow: 0 0 10px var(--neon1);
+}
+
+.profile-dropdown {
+    display: none;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.profile-dropdown li {
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.profile-dropdown li:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+/* ===================================
+   NAV LINKS
+=================================== */
+.nav-link {
+    padding: 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: 0.25s;
+}
+
+.nav-link:hover {
+    background: rgba(0,234,255,0.12);
+    color: var(--neon1);
+    transform: translateX(6px);
+}
+
+.nav-link.active {
+    background: rgba(0,234,255,0.25);
+    color: var(--neon1);
+    box-shadow: 0 0 12px rgba(0,234,255,0.4);
+}
+
+/* ===================================
+   MAIN AREA
+=================================== */
+.main {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    padding: 28px;
+    transition: 0.35s ease;
+}
+
+.sidebar.collapsed + .main {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+}
+
+/* ===================================
+   HEADER TOOLS
+=================================== */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-tools {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tool-btn {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border-dark);
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.tool-btn:hover {
+    box-shadow: 0 0 12px var(--neon1);
+    border-color: var(--neon1);
+}
+
+/* ===================================
+   NOTIFICATION DROPDOWN
+=================================== */
+.notif-dropdown {
+    position: absolute;
+    top: 70px;
+    right: 40px;
+    width: 290px;
+    padding: 12px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    display: none;
+}
+
+.log-item {
+    padding: 6px 0;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- ===================================
+     SIDEBAR
+=================================== -->
+<div class="sidebar" id="sidebar">
+
+    <div class="brand">
+        <div class="logo">L</div>
+        <h2>Learnify.AI</h2>
+    </div>
+
+    <div class="stat-card">
+    <h2 id="liveActiveUsers">0</h2>
+    <p>Live Active Users</p>
+</div>
+<script>
+var socket = io();
+
+socket.on("active_update", function(data){
+    document.getElementById("liveActiveUsers").innerText = data.count;
+});
+</script>
+
+    <div class="admin-profile" id="adminProfile">
+        <img src="/static/avatars/admin.jpg" class="avatar">
+        <div class="admin-info">
+            <h3 style="margin:0">Admin</h3>
+            <p style="margin:0; font-size:12px;">System Master</p>
+        </div>
+    </div>
+
+    <ul class="profile-dropdown" id="profileMenu">
+        <li onclick="location.href='/admin/profile'">👤 Profile</li>
+        <li onclick="location.href='/admin/settings'">⚙ Settings</li>
+        <li onclick="location.href='/logout'">🚪 Logout</li>
+    </ul>
+
+    <a href="/admin" class="nav-link {% if page=='dashboard' %}active{% endif %}">
+        <i class="fa-solid fa-gauge"></i> <span class="nav-text">Dashboard</span>
+    </a>
+
+    <a href="/admin/users" class="nav-link {% if page=='users' %}active{% endif %}">
+        <i class="fa-solid fa-users"></i> <span class="nav-text">Users</span>
+    </a>
+
+    <a href="/admin/feedback" class="nav-link {% if page=='feedback' %}active{% endif %}">
+        <i class="fa-solid fa-comment-dots"></i> <span class="nav-text">Feedback</span>
+    </a>
+
+    <a href="/admin/settings" class="nav-link {% if page=='settings' %}active{% endif %}">
+        <i class="fa-solid fa-gear"></i> <span class="nav-text">Settings</span>
+    </a>
+
+    <a href="/logout" class="nav-link">
+        <i class="fa-solid fa-right-from-bracket"></i> <span class="nav-text">Logout</span>
+    </a>
+
+</div>
+
+<!-- ===================================
+     MAIN
+=================================== -->
+<div class="main">
+
+    <div class="top-header">
+        <h1>{{ title if title else "Admin Dashboard" }}</h1>
+
+        <div class="top-tools">
+            <div class="tool-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></div>
+            <div class="tool-btn" id="sidebarToggle"><i class="fa-solid fa-bars"></i></div>
+
+            <div class="tool-btn" id="notifyBtn">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="notif-dropdown" id="notifPanel"></div>
+
+    {% block content %}
+    {% endblock %}
+</div>
+
+<script>
+/* ==============================
+   PROFILE DROPDOWN
+============================== */
+document.getElementById("adminProfile").onclick = () => {
+    const menu = document.getElementById("profileMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+};
+
+/* ==============================
+   SIDEBAR COLLAPSE
+============================== */
+document.getElementById("sidebarToggle").onclick = () => {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+};
+
+/* ==============================
+   THEME TOGGLE
+============================== */
+let theme = localStorage.getItem("theme") || "dark";
+
+function applyTheme() {
+    if (theme === "light") {
+        document.body.style.background = "var(--bg-light)";
+        document.body.style.color = "var(--text-light)";
+        document.querySelector(".sidebar").style.background = "var(--glass-light)";
+        document.getElementById("themeToggle").innerHTML = '<i class="fa-solid fa-sun"></i>';
+    } else {
+        document.body.style.background = "var(--bg-dark)";
+        document.body.style.color = "var(--text-dark)";
+        document.querySelector(".sidebar").style.background = "var(--glass-dark)";
+        document.getElementById("themeToggle").innerHTML = '<i class="fa-solid fa-moon"></i>';
+    }
+}
+
+applyTheme();
+
+document.getElementById("themeToggle").onclick = () => {
+    theme = theme === "dark" ? "light" : "dark";
+    localStorage.setItem("theme", theme);
+    applyTheme();
+};
+
+/* ==============================
+   NOTIFICATION DROPDOWN
+============================== */
+document.getElementById("notifyBtn").onclick = async () => {
+    const panel = document.getElementById("notifPanel");
+    let res = await fetch("/admin/logs");
+    let logs = await res.json();
+
+    panel.innerHTML = logs.map(l => `
+        <div class="log-item">
+            <b>${l.user}</b> searched <i>${l.topic}</i><br>
+            Mood: ${l.mood}<br>
+            <small>${l.time}</small>
+        </div><hr>
+    `).join("");
+
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+};
+
+/* ==============================
+   WEBSOCKET LIVE ANALYTICS
+============================== */
+var socket = io();
+
+socket.on("analytics_update", data => {
+    if (document.getElementById("liveUsers"))
+        document.getElementById("liveUsers").innerText = data.total_users;
+
+    if (document.getElementById("liveFeedback"))
+        document.getElementById("liveFeedback").innerText = data.total_feedback;
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin – Settings</title>
+<style>
+body{
+  background:#0b132b;
+  color:white;
+  font-family:Poppins;
+  padding:25px;
+}
+textarea,input{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#1c2541;
+  color:white;
+  margin-bottom:12px;
+}
+button{
+  padding:10px 15px;
+  background:#00b4d8;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+.notice{
+  background:#1c254199;
+  padding:10px;
+  margin-top:12px;
+  border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⚙ Admin Settings</h1>
+
+<h3>📢 Site Announcement</h3>
+<form method="POST">
+<textarea name="announcement">{{ announcement }}</textarea>
+<button type="submit">Save Announcement</button>
+</form>
+
+<br>
+
+<h3>🔔 Notifications</h3>
+<form method="POST" action="/admin/add_notification">
+<input name="notification" placeholder="Type notification…">
+<button>Add</button>
+</form>
+
+<div class="notice">
+  <h4>Current Notifications</h4>
+  {% for n in settings.notifications %}
+    <p>• {{ n }}</p>
+  {% endfor %}
+</div>
+
+<br>
+
+<h3>🛠 Maintenance Mode</h3>
+<a href="/admin/toggle_maintenance">
+  <button>Toggle Maintenance</button>
+</a>
+
+</body>
+</html>

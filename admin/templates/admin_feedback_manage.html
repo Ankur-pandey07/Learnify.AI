@@ -1,0 +1,19 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<h2 style="color:#00eaff;">Manage Feedback</h2>
+
+<div class="neon-box">
+  {% for row in rows %}
+    <div class="list-item">
+        <div>
+            <strong>{{ row.username }}</strong>: {{ row.feedback or row.user_query }}
+        </div>
+
+        <a href="/admin/feedback/delete/{{ row.id }}" 
+           class="cat-cta" style="background:red;">Delete</a>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

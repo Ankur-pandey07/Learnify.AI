@@ -1,0 +1,222 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<style>
+/* =============================
+   USERS PAGE MODERN UI
+==============================*/
+.user-container {
+    background: rgba(255,255,255,0.06);
+    padding: 22px;
+    margin-top: 25px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(14px);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-dark);
+}
+
+.table th {
+    background: rgba(255,255,255,0.12);
+    padding: 12px;
+    font-size: 15px;
+    text-align: left;
+}
+
+.table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    color: white;
+    font-weight: 600;
+}
+
+.edit-btn { background: #00b4d8; }
+.delete-btn { background: #e63946; }
+.ban-btn { background: #f4a261; }
+.unban-btn { background: #2a9d8f; }
+
+/* POPUP */
+#editPopup {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.75);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.popup-box {
+    width: 360px;
+    padding: 25px;
+    background: rgba(255,255,255,0.09);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+.popup-box input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: none;
+    background: rgba(0,0,0,0.35);
+    color: white;
+}
+
+.popup-box button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+</style>
+
+
+<h1>👥 Manage Users</h1>
+
+<div class="user-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Email</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th width="200">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.created_at }}</td>
+
+                <td>
+                    {% if u.banned == 1 %}
+                        ❌ <span style="color:#e63946;">Banned</span>
+                    {% else %}
+                        ✅ <span style="color:#2ecc71;">Active</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <button class="action-btn edit-btn"
+                        onclick="openEdit('{{ u.id }}','{{ u.username }}','{{ u.email }}')">
+                        Edit
+                    </button>
+
+                    {% if u.banned == 1 %}
+                        <a href="/admin/unban_user/{{ u.id }}">
+                            <button class="action-btn unban-btn">Unban</button>
+                        </a>
+                    {% else %}
+                        <a href="/admin/ban_user/{{ u.id }}">
+                            <button class="action-btn ban-btn">Ban</button>
+                        </a>
+                    {% endif %}
+
+                    <button class="action-btn delete-btn" onclick="deleteUser('{{ u.id }}')">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+
+<!-- ===========================
+      EDIT POPUP
+=========================== -->
+<div id="editPopup">
+    <div class="popup-box">
+
+        <h2>Edit User</h2>
+
+        <input id="editName" placeholder="Username">
+        <input id="editEmail" placeholder="Email">
+
+        <input type="hidden" id="editId">
+
+        <button onclick="saveEdit()" style="background:#00b4d8;color:white;">
+            Save
+        </button>
+        <button onclick="closePopup()" style="background:gray;color:white;">
+            Cancel
+        </button>
+
+    </div>
+</div>
+
+
+<script>
+/* ===========================
+   OPEN EDIT POPUP
+=========================== */
+function openEdit(id, username, email) {
+    document.getElementById("editId").value = id;
+    document.getElementById("editName").value = username;
+    document.getElementById("editEmail").value = email;
+
+    document.getElementById("editPopup").style.display = "flex";
+}
+
+function closePopup() {
+    document.getElementById("editPopup").style.display = "none";
+}
+
+
+/* ===========================
+   SAVE EDIT
+=========================== */
+function saveEdit() {
+    fetch("/admin/update_user?id=" + document.getElementById("editId").value, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            username: document.getElementById("editName").value,
+            email: document.getElementById("editEmail").value
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) location.reload();
+    });
+}
+
+
+/* ===========================
+   DELETE USER
+=========================== */
+function deleteUser(id) {
+    if (confirm("Are you sure you want to delete this user?")) {
+        fetch("/admin/delete_user?id=" + id, {method: "DELETE"})
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) location.reload();
+        });
+    }
+}
+</script>
+
+{% endblock %}

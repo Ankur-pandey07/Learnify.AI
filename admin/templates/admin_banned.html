@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Banned Users</title>
+<style>
+body { background:#0b132b; color:white; font-family:Poppins; padding:40px; }
+table { width:60%; margin:auto; background:rgba(255,255,255,0.1); border-radius:12px; }
+th,td { padding:12px; border-bottom:1px solid rgba(255,255,255,0.2); }
+a { color:#ffd166; }
+</style>
+</head>
+<body>
+
+<h1 style="text-align:center;">Banned Users</h1>
+
+<table>
+<tr><th>Username</th><th>Action</th></tr>
+{% for u in banned %}
+<tr>
+  <td>{{ u }}</td>
+  <td><a href="/admin/remove_ban/{{ u }}">Remove Ban</a></td>
+</tr>
+{% endfor %}
+</table>
+
+</body>
+</html>

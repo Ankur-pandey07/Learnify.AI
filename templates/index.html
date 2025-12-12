@@ -256,28 +256,38 @@
 </style>
 </head>
 <body>
-{% if session.get('is_admin') %}
-<a href="/admin" class="admin-float-btn">
-    <i class="fa-solid fa-gauge-high"></i> Admin Overview
-</a>
-{% endif %}
+
 
 <!-- NAVBAR -->
 <nav class="navbar">
   <a href="/" class="brand brand-link">Learnify.AI</a>
+
   <ul class="nav-links">
+    
     <li><a href="/">Home</a></li>
-    <li><a href="/dashboard">Dashboard</a></li>
-    <!-- Quick Rec opens focus on search -->
+
+    {% if session.get('user') %}
+      <li><a href="/dashboard">Dashboard</a></li>
+    {% endif %}
+
     <li><a href="#" id="quickRec">Get Recommendation</a></li>
     <li><a href="/about">About</a></li>
+
+    <!-- 🔥 SHOW ADMIN PANEL BUTTON ONLY WHEN ADMIN IS LOGGED IN -->
+    {% if session.get('is_admin') %}
+      <li><a href="/admin">Admin Panel</a></li>
+    {% endif %}
+
+    <!-- USER LOGIN/LOGOUT -->
     {% if session.get('user') %}
       <li><a href="/logout">Logout</a></li>
     {% else %}
       <li><a href="/login">Login</a></li>
     {% endif %}
+
   </ul>
 </nav>
+
 
 
 <!-- CONTAINER -->
@@ -521,10 +531,6 @@
 
   </div>
 </section>
-
-    
-
-
   <!-- Why Choose -->
 <section class="section fade-up reveal">
   <h2>Why Choose Learnify.AI?</h2>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Edit User</title>
+<style>
+body { background:#0b132b; color:white; font-family:Poppins; padding:40px; }
+.box { background:rgba(255,255,255,0.1); padding:30px; width:400px; margin:auto; border-radius:14px; }
+input { width:100%; padding:10px; margin-top:10px; border-radius:8px; }
+button { margin-top:15px; padding:10px 20px; background:#90e0ef; border:0; border-radius:8px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Edit User</h2>
+
+<form method="POST">
+  <label>Username:</label>
+  <input name="username" value="{{ user['username'] }}" required>
+
+  <label>Email:</label>
+  <input name="email" value="{{ user['email'] }}" required>
+
+  <button>Save Changes</button>
+</form>
+
+</div>
+
+</body>
+</html>

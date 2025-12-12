@@ -1,0 +1,27 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<h2 style="color:#00eaff;">User Management</h2>
+
+<div class="neon-box">
+  {% for u in users %}
+    <div class="list-item">
+        <div>
+            <strong>{{ u.username }}</strong>
+            {% if u.is_banned == 1 %}
+                <span style="color:red; font-size:14px;">(Banned)</span>
+            {% endif %}
+        </div>
+
+        <div>
+            {% if u.is_banned == 0 %}
+            <a href="/admin/ban/{{ u.username }}" class="cat-cta" style="background:red;">Ban</a>
+            {% else %}
+            <a href="/admin/unban/{{ u.username }}" class="cat-cta" style="background:green;">Unban</a>
+            {% endif %}
+        </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

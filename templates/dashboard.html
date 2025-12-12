@@ -1,345 +1,216 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Dashboard | Learnify.AI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% extends "base.html" %}
+{% block content %}
 
 <style>
-/* ROOT COLORS */
-:root{
-  --bg1:#0b132b;
-  --bg2:#1c2541;
-  --glass:rgba(255,255,255,0.07);
-  --accent:#00b4d8;
-  --accent2:#90e0ef;
+/* ------------------ Dashboard Cards ------------------ */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-top: 25px;
 }
 
-/* GLOBAL */
-body{
-  font-family:"Poppins",sans-serif;
-  background:linear-gradient(135deg,var(--bg1),var(--bg2));
-  color:#fff;
-  padding:22px;
+.card {
+    background: rgba(255,255,255,0.08);
+    padding: 20px;
+    border-radius: 14px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 0 25px rgba(0,255,255,0.15);
+    text-align: center;
+    transition: .3s;
+}
+.card:hover {
+    transform: translateY(-6px);
 }
 
-.container{max-width:1250px;margin:auto;}
-.header{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:18px;
-}
-.brand{font-size:1.5rem;font-weight:700;color:var(--accent2);}
-.header a{color:#fff;text-decoration:none;font-weight:600;margin-left:12px;}
-
-.grid{
-  display:grid;grid-template-columns:300px 1fr;gap:20px;
-}
-.sidebar{
-  background:var(--glass);padding:20px;border-radius:14px;
-  backdrop-filter:blur(10px);
+.card h2 {
+    color: #00eaff;
+    margin: 0;
+    font-size: 2.3rem;
 }
 
-/* AVATAR */
-.avatar{
-  width:80px;height:80px;border-radius:16px;
-  background:linear-gradient(135deg,var(--accent),#0077b6);
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;font-weight:700;margin:auto;
+/* ------------------ Charts ------------------ */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 24px;
+    margin-top: 35px;
 }
 
-/* MAIN SECTION */
-.panel{
-  background:var(--glass);padding:18px;border-radius:14px;
-  backdrop-filter:blur(10px);
-  margin-bottom:16px;
+.chart-box {
+    background: rgba(255,255,255,0.08);
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(14px);
 }
 
-/* CARDS */
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:14px;
-}
-.card{
-  background:var(--glass);padding:18px;border-radius:12px;
-}
-.card .num{
-  font-size:1.7rem;color:var(--accent);font-weight:700;
+/* ------------------ History Table ------------------ */
+.table-box {
+    margin-top: 35px;
+    background: rgba(255,255,255,0.07);
+    padding: 20px;
+    border-radius: 14px;
 }
 
-/* SKELETON SHIMMER */
-.chart-skeleton{
-  height:250px;border-radius:10px;
-  background:linear-gradient(90deg,rgba(255,255,255,0.05),rgba(255,255,255,0.1));
-  animation: shimmer 1s infinite linear;
+table {
+    width: 100%;
+    border-collapse: collapse;
 }
-@keyframes shimmer{
-  0%{background-position:-200px 0;}
-  100%{background-position:200px 0;}
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
 }
-
-/* TIMELINE */
-.timeline{
-  max-height:260px;overflow:auto;padding-right:6px;
-}
-.timeline-item{
-  padding:10px;background:rgba(255,255,255,0.05);
-  margin-bottom:10px;border-radius:10px;
-}
-
-/* ACHIEVEMENTS */
-.ach{
-  display:inline-block;padding:6px 10px;
-  border-radius:999px;font-size:13px;font-weight:600;
-  background:linear-gradient(90deg,var(--accent),#0077b6);
-  margin:4px;
+th {
+    background: rgba(255,255,255,0.12);
 }
 </style>
-</head>
 
-<body>
-<div class="container">
+<h1>👋 Welcome, {{ user }}</h1>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="brand">Learnify.AI Dashboard</div>
-    <div>
-      <a href="/">Home</a>
-      <a href="/logout">Logout</a>
+<!-- Notifications -->
+{% if notifications %}
+<div class="alert" style="background:#1c2740;padding:10px;border-radius:8px;margin-bottom:15px;">
+    <b>📢 Notifications:</b>
+    <ul>
+        {% for n in notifications %}
+        <li>{{ n }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- ======================== STAT CARDS ======================== -->
+<div class="stats">
+
+    <div class="card">
+        <h2>{{ insights.top_topic }}</h2>
+        <p>Most Searched Topic</p>
     </div>
-  </div>
 
-  <div class="grid">
+    <div class="card">
+        <h2>{{ insights.top_mood }}</h2>
+        <p>Your Frequent Mood</p>
+    </div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div style="text-align:center;margin-bottom:20px;">
-        
-        {% if avatar_url %}
-          <img src="{{ avatar_url }}" style="width:100px;height:100px;border-radius:16px;object-fit:cover;">
-        {% else %}
-          <div class="avatar">{{ user[:1] | upper }}</div>
-        {% endif %}
+    <div class="card">
+        <h2>{{ insights.avg_sentiment }}</h2>
+        <p>Avg Sentiment Score</p>
+    </div>
 
-        <h2 style="margin:10px 0;color:var(--accent2)">{{ user }}</h2>
-
-        <form action="/upload_avatar" method="post" enctype="multipart/form-data">
-    <input type="file" name="avatar" accept="image/*" style="margin:8px 0;">
-    <button 
-       style="padding:8px 12px;border:none;border-radius:6px;
-              background:#00b4d8;color:#000;font-weight:600;cursor:pointer">
-      Upload Avatar
-    </button>
-</form>
-
-
-        <div style="margin-top:10px;">
-          <span class="ach">Level {{ (history|length // 5) + 1 }}</span>
-        </div>
-
-      </div>
-
-      <hr style="border:none;height:1px;background:rgba(255,255,255,0.2);margin:16px 0;">
-
-      <h3 style="color:var(--accent2);margin-bottom:6px;">Quick Links</h3>
-      <a href="#" onclick="openQuick()" style="color:#fff;text-decoration:none;display:block;margin:6px 0;">Get Recommendation</a>
-      <a href="/dashboard" style="color:#fff;text-decoration:none;display:block;margin:6px 0;">Dashboard</a>
-    </aside>
-
-    <!-- MAIN -->
-    <main>
-
-      <div class="panel">
-        <h2 style="margin:0;color:var(--accent2)">Welcome Back, {{ user }} 👋</h2>
-        <p style="opacity:0.85">Here is your learning performance summary.</p>
-      </div>
-
-      <!-- CARDS -->
-      <div class="cards">
-        <div class="card"><div class="num">{{ history|length }}</div>Queries</div>
-        <div class="card"><div class="num">{{ topic_data|length }}</div>Topics</div>
-        <div class="card"><div class="num">{{ mood_data|length }}</div>Moods</div>
-        <div class="card"><div class="num">{{ insights.avg_sentiment }}</div>Avg Sentiment</div>
-      </div>
-
-      <!-- GRID Row 2 -->
-      <div style="display:grid;grid-template-columns:1fr 380px;gap:16px;margin-top:16px;">
-
-        <!-- LEFT SIDE (Charts + Timeline) -->
-        <div>
-
-          <!-- TOPIC CHART -->
-          <div class="panel">
-            <h3 style="margin:0 0 8px 0;color:var(--accent2)">Topic Distribution</h3>
-            <div id="topic-skeleton" class="chart-skeleton"></div>
-            <canvas id="topicChart" style="display:none;"></canvas>
-          </div>
-
-          <!-- MOOD CHART -->
-          <div class="panel">
-            <h3 style="margin:0 0 8px 0;color:var(--accent2)">Mood Breakdown</h3>
-            <div id="mood-skeleton" class="chart-skeleton"></div>
-            <canvas id="moodChart" style="display:none;"></canvas>
-          </div>
-
-          <!-- TIMELINE -->
-          <div class="panel">
-            <h3 style="margin:0 0 8px 0;color:var(--accent2)">Recent Activity</h3>
-            <div class="timeline">
-              {% for r in history[:8] %}
-                <div class="timeline-item">
-                  <div style="font-weight:600">{{ r.user_query }}</div>
-                  <div style="font-size:12px;opacity:0.85;">
-                    Topic: <b style="color:var(--accent)">{{ r.topic }}</b>
-                    • Mood: {{ r.mood }}
-                  </div>
-                  <div style="font-size:11px;opacity:0.7;margin-top:4px;">
-                    {{ r.created_at }}
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-
-        </div>
-
-        <!-- RIGHT SIDE (Insights + Weekly + Achievements) -->
-        <aside>
-
-          <!-- AI INSIGHTS -->
-          <div class="panel">
-            <h3 style="margin:0;color:var(--accent2)">AI Insights</h3>
-            <ul style="opacity:0.9;line-height:1.6;">
-              <li>Top Topic: <b style="color:var(--accent)">{{ insights.top_topic }}</b></li>
-              <li>Most Frequent Mood: <b>{{ insights.top_mood }}</b></li>
-              <li>Average Sentiment: <b>{{ insights.avg_sentiment }}</b></li>
-            </ul>
-          </div>
-
-          <!-- WEEKLY ACTIVITY -->
-          <div class="panel">
-            <h3 style="margin:0;color:var(--accent2)">Weekly Activity</h3>
-            <div style="display:flex;gap:10px;margin-top:10px;">
-              {% for d in weekly_activity %}
-                <div style="text-align:center;">
-                  <div style="
-                    width:26px;height:26px;border-radius:6px;margin:auto;
-                    background:
-                      {% if d.count==0 %} rgba(255,255,255,0.1)
-                      {% elif d.count==1 %} #1b6e86
-                      {% elif d.count==2 %} #0077b6
-                      {% else %} #00b4d8 {% endif %}
-                  "></div>
-                  <div style="font-size:12px;margin-top:5px;">{{ d.day }}</div>
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <!-- ACHIEVEMENTS -->
-          <div class="panel">
-            <h3 style="margin:0;color:var(--accent2)">Achievements</h3>
-            <div style="margin-top:10px;">
-              {% for a in achievements %}
-                <span class="ach">{{ a }}</span>
-              {% endfor %}
-              {% if achievements|length == 0 %}
-                <p style="opacity:0.7;">No achievements yet.</p>
-              {% endif %}
-            </div>
-          </div>
-
-        </aside>
-
-      </div>
-
-      <!-- FULL HISTORY TABLE -->
-      <div class="panel">
-        <h3 style="margin:0 0 12px 0;color:var(--accent2)">Full History</h3>
-
-        {% if history %}
-        <table style="width:100%;border-collapse:collapse;">
-          <thead style="background:rgba(255,255,255,0.15);">
-            <tr>
-              <th style="padding:8px;">Query</th>
-              <th>Topic</th>
-              <th>Mood</th>
-              <th>Sentiment</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {% for r in history %}
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-              <td style="padding:8px;">{{ r.user_query }}</td>
-              <td>{{ r.topic }}</td>
-              <td>{{ r.mood }}</td>
-              <td>{{ "%.2f"|format(r.sentiment) }}</td>
-              <td>{{ r.created_at }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        <p>No history yet.</p>
-        {% endif %}
-      </div>
-
-    </main>
-
-  </div>
 </div>
 
-<!-- =======================
-     CHART JS (AFTER LOAD)
-======================= -->
+
+<!-- ======================== CHARTS ======================== -->
+<div class="chart-grid">
+
+    <!-- TOPIC CHART -->
+    <div class="chart-box">
+        <h3>🔍 Topic Popularity</h3>
+        <canvas id="topicChart"></canvas>
+    </div>
+
+    <!-- MOOD CHART -->
+    <div class="chart-box">
+        <h3>🙂 Mood Pattern</h3>
+        <canvas id="moodChart"></canvas>
+    </div>
+
+    <!-- SENTIMENT LINE -->
+    <div class="chart-box">
+        <h3>💬 Sentiment Trend</h3>
+        <canvas id="sentChart"></canvas>
+    </div>
+
+    <!-- RADAR -->
+    <div class="chart-box">
+        <h3>🎯 Mood Radar</h3>
+        <canvas id="radarChart"></canvas>
+    </div>
+
+</div>
+
+
+<!-- ======================== HISTORY TABLE ======================== -->
+<div class="table-box">
+    <h2>📜 Recent Searches</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Topic</th>
+                <th>Mood</th>
+                <th>Sentiment</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td>{{ h.topic }}</td>
+                <td>{{ h.mood }}</td>
+                <td>{{ h.sentiment }}</td>
+                <td>{{ h.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
 <script>
-const topicData = {{ topic_data | tojson | safe }};
-const moodData = {{ mood_data | tojson | safe }};
-
-/* Delay charts (skeleton effect) */
-setTimeout(() => {
-  document.getElementById("topic-skeleton").style.display="none";
-  document.getElementById("mood-skeleton").style.display="none";
-  document.getElementById("topicChart").style.display="block";
-  document.getElementById("moodChart").style.display="block";
-
-  /* Topic Bar Chart */
-  new Chart(document.getElementById("topicChart"), {
-    type:"bar",
-    data:{
-      labels:Object.keys(topicData),
-      datasets:[{
-        label:"Queries",
-        data:Object.values(topicData),
-        backgroundColor:"#00b4d8"
-      }]
-    },
-    options:{responsive:true,plugins:{legend:{display:false}}}
-  });
-
-  /* Mood Pie Chart */
-  new Chart(document.getElementById("moodChart"), {
-    type:"pie",
-    data:{
-      labels:Object.keys(moodData),
-      datasets:[{
-        data:Object.values(moodData),
-        backgroundColor:["#00b4d8","#90e0ef","#48cae4","#0077b6"]
-      }]
+/* -------- Topic Pie -------- */
+new Chart(document.getElementById("topicChart"), {
+    type: "pie",
+    data: {
+        labels: {{ topic_data.keys()|list }},
+        datasets: [{
+            data: {{ topic_data.values()|list }},
+            backgroundColor: ["#00eaff","#0096c7","#7b2fff","#48cae4","#90e0ef"]
+        }]
     }
-  });
+});
 
-}, 700);
-</script>
-<script>
-function openQuick(){
-    window.location.href = "/";
-}
+/* -------- Mood Bar -------- */
+new Chart(document.getElementById("moodChart"), {
+    type: "bar",
+    data: {
+        labels: {{ mood_data.keys()|list }},
+        datasets: [{
+            data: {{ mood_data.values()|list }},
+            backgroundColor: "#7b2fff"
+        }]
+    }
+});
+
+/* -------- Sentiment Line -------- */
+new Chart(document.getElementById("sentChart"), {
+    type: "line",
+    data: {
+        labels: Array.from({length: {{ sentiment_data|length }}}, (_,i)=> i+1),
+        datasets: [{
+            data: {{ sentiment_data|safe }},
+            borderColor: "#00eaff",
+            tension: .3
+        }]
+    }
+});
+
+/* -------- Radar -------- */
+new Chart(document.getElementById("radarChart"), {
+    type: "radar",
+    data: {
+        labels: {{ mood_data.keys()|list }},
+        datasets: [{
+            label: "Mood Strength",
+            data: {{ mood_data.values()|list }},
+            backgroundColor: "rgba(0,234,255,0.25)",
+            borderColor: "#00eaff",
+            borderWidth: 2
+        }]
+    }
+});
 </script>
 
-</body>
-</html>
+{% endblock %}
